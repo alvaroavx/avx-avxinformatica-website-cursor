@@ -1,0 +1,95 @@
+/* AVX Home — Game state shell (overlay + layout) */
+
+.state--game {
+  position: relative;
+  z-index: var(--z-game-canvas);
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.game__root {
+  position: fixed;
+  inset: 0;
+}
+
+.game__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: var(--z-game-canvas);
+}
+
+.game__overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--space-8) var(--space-6);
+  z-index: var(--z-overlay);
+  background: rgba(2, 11, 24, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+/* [hidden] debe ganar a display:grid del overlay (si no, el panel sigue tapando el canvas) */
+.game__overlay[hidden] {
+  display: none !important;
+}
+
+.game__panel {
+  width: min(720px, 100%);
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow:
+    0 0 18px rgba(0, 255, 136, 0.12),
+    inset 0 0 10px rgba(0, 255, 136, 0.04);
+  padding: var(--space-8);
+}
+
+.game__panel-title {
+  margin: 0 0 var(--space-6);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.game__controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+}
+
+.game__controls-title {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-neon-dim);
+}
+
+.game__controls-line,
+.game__mission,
+.game__countdown {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+.game__countdown {
+  margin-top: var(--space-6);
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+#game-countdown {
+  color: var(--color-neon-primary);
+}
+
+@media (max-width: 520px) {
+  .game__controls {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>AVX Informática</title>
+    <meta
+      name="description"
+      content="Construimos tu próximo nivel tecnológico. Software · Automatización · Arquitectura · Inteligencia Artificial."
+    />
+
+    <!-- ASSET: universe.jpg — temporal; optimizar luego a WebP + JPG -->
+    <link
+      rel="preload"
+      as="image"
+      href="assets/images/universe.jpg"
+      type="image/jpeg"
+      media="(min-width: 1024px)"
+    />
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CSS crítico -->
+    <link rel="stylesheet" href="styles/variables.css" />
+    <link rel="stylesheet" href="styles/base.css" />
+    <link rel="stylesheet" href="styles/home.css" />
+
+    <!-- CSS no crítico -->
+    <link rel="stylesheet" href="styles/planets.css" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="styles/logo.css" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="styles/transitions.css" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="styles/game.css" media="print" onload="this.media='all'" />
+    <link rel="stylesheet" href="styles/fallback.css" media="print" onload="this.media='all'" />
+
+    <!-- ASSET: favicon.png — reemplazar por set completo si se desea -->
+    <link rel="icon" href="assets/images/favicon.png" type="image/png" />
+  </head>
+
+  <body>
+    <!-- Fondo global (visible en todos los estados) -->
+    <div class="app-bg" aria-hidden="true"></div>
+
+    <!-- ESTADO 1: HOME (desktop) -->
+    <section id="home-state" class="state state--home" aria-label="AVX Informática - Home">
+      <canvas id="home-canvas" class="home__particles" aria-hidden="true"></canvas>
+      <div class="home__grid" aria-hidden="true"></div>
+      <div class="home__hud home__hud--top" aria-hidden="true">
+  
+      </div>
+      <div class="home__hud home__hud--bottom" aria-hidden="true">
+      </div>
+
+      <div class="home__core">
+        <p class="home__eyebrow">AVX // PUENTE DE MANDO</p>
+        <div class="home__logo" id="avx-logo" aria-label="AVX Informática">
+          <!-- ASSET: logo-avx-animated.svg — Reemplazar con SVG oficial animado -->
+          <svg
+            id="avx-logo-svg"
+            viewBox="0 0 200 200"
+            width="120"
+            height="120"
+            role="img"
+            aria-label="AVX"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id="avxGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="rgba(0,255,136,0.8)" />
+                <stop offset="1" stop-color="rgba(0,255,136,0.25)" />
+              </linearGradient>
+            </defs>
+            <g fill="none" stroke="url(#avxGrad)" stroke-width="3">
+              <path d="M100 18 L132 88 L100 74 L68 88 Z" />
+              <path d="M100 182 L132 112 L100 126 L68 112 Z" />
+              <path d="M18 100 L88 132 L74 100 L88 68 Z" />
+              <path d="M182 100 L112 132 L126 100 L112 68 Z" />
+              <path d="M100 64 L136 100 L100 136 L64 100 Z" />
+            </g>
+            <text
+              x="100"
+              y="108"
+              text-anchor="middle"
+              font-family="JetBrains Mono, monospace"
+              font-size="20"
+              fill="rgba(232,244,240,0.9)"
+            >
+              &lt;AVX&gt;
+            </text>
+          </svg>
+        </div>
+
+        <h1 class="home__tagline">Construimos tu próximo nivel tecnológico</h1>
+        <p class="home__subtitle">Software · Automatización · Arquitectura · Inteligencia Artificial</p>
+
+        <div class="home__cta-group">
+          <a href="#contacto" class="btn btn--primary" id="cta-contact">CONTÁCTANOS</a>
+          <button class="btn btn--secondary" id="cta-game" aria-label="Iniciar simulación arcade">
+            INICIAR SIMULACIÓN
+          </button>
+        </div>
+      </div>
+
+      <nav class="home__planets" aria-label="Navegación principal">
+        <a href="#nosotros" class="planet planet--nosotros" data-label="NOSOTROS" data-index="01"></a>
+        <a href="#servicios" class="planet planet--servicios" data-label="SERVICIOS" data-index="02"></a>
+        <a href="#portafolio" class="planet planet--portafolio" data-label="PORTAFOLIO" data-index="03"></a>
+        <a href="#contacto" class="planet planet--contacto" data-label="CONTACTO" data-index="04"></a>
+      </nav>
+    </section>
+
+    <!-- SECCIONES PLACEHOLDER (solo en home) -->
+    <div id="home-sections">
+      <nav class="section-nav" aria-label="Navegación de contenido">
+        <a href="#home-state">INICIO</a>
+        <a href="#nosotros">NOSOTROS</a>
+        <a href="#servicios">SERVICIOS</a>
+        <a href="#portafolio">PORTAFOLIO</a>
+        <a href="#contacto">CONTACTO</a>
+      </nav>
+
+      <section id="nosotros" class="content-section">
+        <div class="section-shell">
+          <header class="section-header">
+            <p class="section-kicker">SECCIÓN 01 // NOSOTROS</p>
+            <h2 class="section-title">Arquitectura, ejecución y traspaso real.</h2>
+            <p class="section-intro">
+              AVX Informática es una empresa de desarrollo de software, arquitectura tecnológica e
+              integración de inteligencia artificial con base en Chile. No somos una agencia que
+              entrega wireframes: somos el equipo que entra, ordena, construye y deja el sistema
+              funcionando.
+            </p>
+            <p class="section-intro">
+              Trabajamos con empresas que tienen problemas tecnológicos reales: procesos manuales
+              costosos, sistemas que no se comunican, plataformas que no escalan. Los resolvemos.
+            </p>
+          </header>
+
+          <div class="section-band">
+            <span>ARQUITECTURA DOCUMENTADA</span>
+            <span>CI/CD Y CALIDAD</span>
+            <span>ENTREGA END-TO-END</span>
+            <span>CHILE + LATAM</span>
+          </div>
+
+          <div class="team-grid">
+            <article class="team-card">
+              <p class="team-card__role">FUNDADOR & CTO</p>
+              <h3 class="team-card__name">Álvaro Vargas Quezada</h3>
+              <p class="team-card__title">Desarrollador Full-Stack Senior · Arquitecto de Software</p>
+              <p class="team-card__summary">
+                Diseña, integra y entrega software listo para escalar. Entra a ordenar: integra lo
+                existente, desarrolla lo que falta y deja documentación para que el equipo continúe.
+              </p>
+              <div class="chip-list">
+                <span class="chip">Node.js</span>
+                <span class="chip">Python</span>
+                <span class="chip">AWS</span>
+                <span class="chip">Microservicios</span>
+                <span class="chip">Docker</span>
+                <span class="chip">CI/CD</span>
+              </div>
+              <p class="team-card__meta">
+                Diploma en Ingeniería de Software, Universidad de Chile. Ingeniería en Ejecución en
+                Computación e Informática, UTFSM.
+              </p>
+              <ul class="timeline-list">
+                <li>AVX Informática — Fundador y CTO (2022–presente)</li>
+                <li>Moveapps — Arquitecto de Software y Líder Técnico (2019–2021)</li>
+                <li>OpenGeek Service — Ingeniero de Software (2016–2020)</li>
+                <li>CORFO — Analista y Arquitecto de Software (2012–2016)</li>
+              </ul>
+            </article>
+
+            <article class="team-card">
+              <p class="team-card__role">TECHNICAL LEAD</p>
+              <h3 class="team-card__name">Nicolás Montenegro Pizarro</h3>
+              <p class="team-card__title">Ingeniero en Informática · Especialista Backend</p>
+              <p class="team-card__summary">
+                Líder técnico enfocado en dirección, toma de decisiones, calidad y mejora continua.
+                Metódico, exigente y orientado a encontrar causas raíz en sistemas complejos.
+              </p>
+              <div class="chip-list">
+                <span class="chip">Java</span>
+                <span class="chip">Spring Boot</span>
+                <span class="chip">React</span>
+                <span class="chip">Seguridad</span>
+                <span class="chip">SonarQube</span>
+                <span class="chip">DevOps</span>
+              </div>
+              <p class="team-card__meta">
+                INACAP + diplomados en calidad de software, seguridad computacional y metodologías
+                ágiles en la Universidad de Chile y ENNOVATE.
+              </p>
+              <ul class="timeline-list">
+                <li>Scotiabank Chile — Technical Lead (2025–presente)</li>
+                <li>Scotiabank Chile — Full Stack Engineer (2023–2025)</li>
+                <li>Imagemaker para Scotiabank — Software Developer (2020–2023)</li>
+                <li>Instituto Nacional de Ortodoncia — Ingeniero de Software (2016–2020)</li>
+              </ul>
+            </article>
+
+            <article class="team-card">
+              <p class="team-card__role">MOBILE & FRONTEND SENIOR</p>
+              <h3 class="team-card__name">Mauricio Carrasco Hernández</h3>
+              <p class="team-card__title">Flutter Senior · React · React Native · Full-Stack</p>
+              <p class="team-card__summary">
+                Desarrollador web y mobile enfocado en front-end y producto. Especialista en Flutter
+                y React con experiencia real en apps empresariales para iOS y Android.
+              </p>
+              <div class="chip-list">
+                <span class="chip">Flutter</span>
+                <span class="chip">React</span>
+                <span class="chip">React Native</span>
+                <span class="chip">Firebase</span>
+                <span class="chip">GraphQL</span>
+                <span class="chip">Spring Boot</span>
+              </div>
+              <p class="team-card__meta">
+                Programación y Análisis de Sistemas, AIEP. Tesis: videojuego interactivo para niños
+                no videntes.
+              </p>
+              <ul class="timeline-list">
+                <li>HF Solutions — Desarrollador Mobile Senior (2023–presente)</li>
+                <li>Zenta Group — Desarrollador Mobile Senior (2021–2023)</li>
+                <li>Kibernum — Desarrollador FullStack (2021)</li>
+                <li>Moveapps — Desarrollador FullStack y Mobile (2019–2021)</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="servicios" class="content-section">
+        <div class="section-shell">
+          <header class="section-header">
+            <p class="section-kicker">SECCIÓN 02 // SERVICIOS</p>
+            <h2 class="section-title">Entramos donde hay complejidad, dependencia y riesgo.</h2>
+            <p class="section-intro">
+              Diseñamos y ejecutamos soluciones para empresas que necesitan integrar, modernizar,
+              automatizar y escalar sistemas sin improvisación.
+            </p>
+          </header>
+
+          <div class="service-grid">
+            <article class="service-card service-card--featured">
+              <p class="service-card__index">01</p>
+              <h3>Desarrollo de Software a Medida</h3>
+              <p>
+                Aplicaciones web y sistemas construidos sobre tu operación, no sobre plantillas.
+              </p>
+              <ul>
+                <li>Aplicaciones web completas y backends</li>
+                <li>APIs REST y sistemas internos</li>
+                <li>Reportería y automatización</li>
+                <li>Documentación técnica y de usuario</li>
+              </ul>
+              <p class="service-card__audience">
+                Para empresas con procesos en Excel, PDF o sistemas desconectados.
+              </p>
+            </article>
+
+            <article class="service-card">
+              <p class="service-card__index">02</p>
+              <h3>Arquitectura de Software</h3>
+              <p>Definimos cómo construir para escalar sin convertir la solución en deuda técnica.</p>
+              <ul>
+                <li>Diagnóstico técnico y riesgos</li>
+                <li>Diseño C4, ADRs y alto/bajo nivel</li>
+                <li>Contratos de API y modelo de datos</li>
+                <li>Roadmap de modernización</li>
+              </ul>
+              <p class="service-card__audience">
+                Para equipos con crecimiento desordenado, rendimiento pobre o deuda acumulada.
+              </p>
+            </article>
+
+            <article class="service-card service-card--accent">
+              <p class="service-card__index">03</p>
+              <h3>Integración de Inteligencia Artificial</h3>
+              <p>
+                IA aplicada a procesos reales: clasificación, normalización, asistentes y extracción
+                de información con impacto medible.
+              </p>
+              <ul>
+                <li>LLMs integrados a flujos existentes</li>
+                <li>Automatización documental</li>
+                <li>Asistentes con contexto de negocio</li>
+                <li>Fuzzy matching y deduplicación</li>
+              </ul>
+              <p class="service-card__audience">
+                Para operaciones con alto volumen de revisión manual y datos desordenados.
+              </p>
+            </article>
+
+            <article class="service-card">
+              <p class="service-card__index">04</p>
+              <h3>Desarrollo Mobile</h3>
+              <p>Apps conectadas a sistemas internos con foco en operación, seguridad y escalabilidad.</p>
+              <ul>
+                <li>Flutter y React Native</li>
+                <li>Push, modo offline y base local</li>
+                <li>OAuth2, JWT, Face ID y huella</li>
+                <li>Publicación en stores</li>
+              </ul>
+              <p class="service-card__audience">
+                Para empresas que necesitan digitalizar procesos en canal móvil.
+              </p>
+            </article>
+
+            <article class="service-card">
+              <p class="service-card__index">05</p>
+              <h3>Integración de Sistemas y APIs</h3>
+              <p>Conectamos plataformas, legados, servicios del Estado y ecosistemas financieros.</p>
+              <ul>
+                <li>REST, SOAP y API Gateway</li>
+                <li>SII, DSpace, OJS y servicios del Estado</li>
+                <li>eCommerce, banca y retail</li>
+                <li>Swagger/OpenAPI y seguridad</li>
+              </ul>
+              <p class="service-card__audience">
+                Para empresas con múltiples sistemas e intercambio manual de información.
+              </p>
+            </article>
+
+            <article class="service-card">
+              <p class="service-card__index">06</p>
+              <h3>Automatización de Procesos</h3>
+              <p>Convertimos tareas repetitivas en flujos técnicos confiables y trazables.</p>
+              <ul>
+                <li>Jobs y pipelines</li>
+                <li>Reportería automatizada</li>
+                <li>Webhooks y notificaciones</li>
+                <li>Procesamiento masivo</li>
+              </ul>
+              <p class="service-card__audience">
+                Para equipos que aún dependen de validaciones y reportes manuales.
+              </p>
+            </article>
+
+            <article class="service-card">
+              <p class="service-card__index">07</p>
+              <h3>Cloud & DevOps</h3>
+              <p>Infraestructura, despliegue y observabilidad para que entregar software deje de ser un riesgo.</p>
+              <ul>
+                <li>AWS, Docker y Kubernetes</li>
+                <li>CI/CD y Helm</li>
+                <li>Logs, alertas y troubleshooting</li>
+                <li>Optimización de costos</li>
+              </ul>
+              <p class="service-card__audience">
+                Para empresas con despliegues frágiles o costos cloud sin control.
+              </p>
+            </article>
+
+            <article class="service-card">
+              <p class="service-card__index">08</p>
+              <h3>Capacitación Técnica</h3>
+              <p>Transferencia de conocimiento con foco en las prácticas y stacks que tu equipo sí usa.</p>
+              <ul>
+                <li>Angular, React, Spring Boot, Node.js, Python, Flutter</li>
+                <li>Arquitectura, SOLID y estándares de equipo</li>
+                <li>DevOps y seguridad en APIs</li>
+                <li>Playbooks y runbooks operativos</li>
+              </ul>
+              <p class="service-card__audience">
+                Para equipos que necesitan subir nivel sin depender siempre de terceros.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="portafolio" class="content-section">
+        <div class="section-shell">
+          <header class="section-header">
+            <p class="section-kicker">SECCIÓN 03 // PORTAFOLIO</p>
+            <h2 class="section-title">Proyectos donde la complejidad era real.</h2>
+            <p class="section-intro">
+              CORFO, Poder Judicial, Universidad de Chile, Dirección del Trabajo, ADRetail, Blue
+              Express y banca. No mostramos conceptos: mostramos ejecución.
+            </p>
+          </header>
+
+          <div class="portfolio-grid">
+            <details class="project-card" open>
+              <summary>
+                <span class="project-card__number">01</span>
+                <span>
+                  <strong>Plataforma de Gestión de Metadatos para CORFO</strong>
+                  <small>CORFO · 2025 · Python / Django / PostgreSQL / DSpace 7</small>
+                </span>
+              </summary>
+              <p><strong>Problema:</strong> publicación manual, dispersa y sin trazabilidad en DSpace.</p>
+              <p>
+                <strong>Qué construimos:</strong> plataforma completa con workflow de aprobación,
+                DataTables avanzado, exportaciones, API por API Key e integración automatizada paso
+                a paso con DSpace 7.
+              </p>
+              <p class="project-card__impact">
+                Impacto: flujo único, repetible y trazable; eliminación de pasos manuales.
+              </p>
+            </details>
+
+            <details class="project-card">
+              <summary>
+                <span class="project-card__number">02</span>
+                <span>
+                  <strong>Administrador de Sentencias del Poder Judicial</strong>
+                  <small>Poder Judicial · 2017–2018 · Django / Solr / VuFind / OAI-PMH</small>
+                </span>
+              </summary>
+              <p><strong>Problema:</strong> más de 10 millones de sentencias dispersas y difíciles de encontrar.</p>
+              <p>
+                <strong>Qué construimos:</strong> pipeline de cosecha y normalización, índice de
+                búsqueda con facetas, backoffice de curación e integración con SSO institucional.
+              </p>
+              <p class="project-card__impact">
+                Impacto: búsquedas que pasaron de horas a milisegundos y operación diaria automatizada.
+              </p>
+            </details>
+
+            <details class="project-card">
+              <summary>
+                <span class="project-card__number">03</span>
+                <span>
+                  <strong>Gestión Tributaria e Integración con SII</strong>
+                  <small>CORFO · 2023–2024 · .NET / SQL Server / SOAP / REST / EPPlus</small>
+                </span>
+              </summary>
+              <p><strong>Problema:</strong> consultas fiscales masivas requerían intervención manual y tiempos altos.</p>
+              <p>
+                <strong>Qué construimos:</strong> plataforma web, API de Carpeta Tributaria con caché
+                inteligente y consola para lotes de RUTs con Excel y envío automático por correo.
+              </p>
+              <p class="project-card__impact">
+                Impacto: validación masiva automatizada, reducción de tiempos y trazabilidad completa.
+              </p>
+            </details>
+
+            <details class="project-card">
+              <summary>
+                <span class="project-card__number">04</span>
+                <span>
+                  <strong>Normalización Masiva de Metadatos DSpace</strong>
+                  <small>Universidad de Chile · 2024 · Python / PostgreSQL / pandas / fuzzywuzzy</small>
+                </span>
+              </summary>
+              <p><strong>Problema:</strong> más de 366.000 registros sin normalizar degradaban la búsqueda del repositorio.</p>
+              <p>
+                <strong>Qué construimos:</strong> sistema de fuzzy matching con procesamiento paralelo
+                para agrupar variantes de autores, asesores y editores.
+              </p>
+              <p class="project-card__impact">
+                Impacto: 166.234 registros estandarizados y mejor recuperación de información científica.
+              </p>
+            </details>
+
+            <details class="project-card">
+              <summary>
+                <span class="project-card__number">05</span>
+                <span>
+                  <strong>MiBO: BackOffice Institucional</strong>
+                  <small>Dirección del Trabajo · 2019–2020 · React / Redux / Node.js / SQL Server</small>
+                </span>
+              </summary>
+              <p><strong>Problema:</strong> trámites internos fragmentados sin un sistema core institucional unificado.</p>
+              <p>
+                <strong>Qué construimos:</strong> backoffice completo con workflows, modelado BPM,
+                notificaciones, trazabilidad y soporte multicanal.
+              </p>
+              <p class="project-card__impact">
+                Impacto: base del nuevo sistema core institucional con procesos digitalizados a nivel país.
+              </p>
+            </details>
+
+            <details class="project-card">
+              <summary>
+                <span class="project-card__number">06</span>
+                <span>
+                  <strong>OMS Omnix / Proyecto Sirius</strong>
+                  <small>ADRetail · 2020–2021 · AWS / Lambda / Docker / Magento / Node.js</small>
+                </span>
+              </summary>
+              <p><strong>Problema:</strong> integrar eCommerce, OMS y operación omnicanal en retail de alto volumen.</p>
+              <p>
+                <strong>Qué construimos:</strong> arquitectura serverless en AWS, conectores,
+                integración OAuth 2.0, pipeline PMM → Magento y apoyo a implementación WMS.
+              </p>
+              <p class="project-card__impact">
+                Impacto: sincronización diaria automatizada y trazabilidad completa de órdenes.
+              </p>
+            </details>
+
+            <details class="project-card">
+              <summary>
+                <span class="project-card__number">07</span>
+                <span>
+                  <strong>Modernización Sistema OJS</strong>
+                  <small>Universidad de Chile · 2024 · OJS / PHP / jsPDF / XML / Quill</small>
+                </span>
+              </summary>
+              <p><strong>Problema:</strong> errores críticos impedían validación SciELO y faltaban capacidades editoriales modernas.</p>
+              <p>
+                <strong>Qué construimos:</strong> corrección de XML, ORCID, afiliaciones, multilenguaje,
+                PDF/HTML desde XML, editor WYSIWYG y formatos de citación múltiples.
+              </p>
+              <p class="project-card__impact">
+                Impacto: cumplimiento de estándares SciELO y mejor experiencia para editores e investigadores.
+              </p>
+            </details>
+
+            <details class="project-card">
+              <summary>
+                <span class="project-card__number">08</span>
+                <span>
+                  <strong>Gobierno de APIs y Microservicios</strong>
+                  <small>Blue Express · 2021–2022 · NestJS / Spring Boot / EKS / Kong / Keycloak</small>
+                </span>
+              </summary>
+              <p><strong>Problema:</strong> necesidad de estandarizar servicios, seguridad y despliegues en Kubernetes.</p>
+              <p>
+                <strong>Qué construimos:</strong> gobierno API First, integración con Kong y Keycloak,
+                CI/CD con GitHub Actions y Helm, y arquitectura GraphQL con Redis Pub/Sub.
+              </p>
+              <p class="project-card__impact">
+                Impacto: catálogo de servicios estandarizado, despliegues reproducibles y seguridad unificada.
+              </p>
+            </details>
+
+            <details class="project-card">
+              <summary>
+                <span class="project-card__number">09</span>
+                <span>
+                  <strong>APIs Financieras</strong>
+                  <small>ADRetail · 2021–2024 · NestJS / Docker / Kubernetes / Cognito / Apigee</small>
+                </span>
+              </summary>
+              <p><strong>Problema:</strong> modernizar sistemas financieros legacy y exponer capacidades críticas con seguridad.</p>
+              <p>
+                <strong>Qué construimos:</strong> OTP, login, movimientos, avances VISA, firma SOVOS,
+                cuentas y transferencias, y apificación de legados con alta cobertura de pruebas.
+              </p>
+              <p class="project-card__impact">
+                Impacto: continuidad operativa, trazabilidad del cliente y modernización del core financiero.
+              </p>
+            </details>
+
+            <details class="project-card">
+              <summary>
+                <span class="project-card__number">10</span>
+                <span>
+                  <strong>Capacitación Angular Práctico</strong>
+                  <small>Capacitación técnica · 2025 · Angular v20 / TypeScript / RxJS</small>
+                </span>
+              </summary>
+              <p><strong>Problema:</strong> equipo necesitaba subir nivel en Angular moderno y arquitectura escalable.</p>
+              <p>
+                <strong>Qué construimos:</strong> programa intensivo de 24 horas con aplicación modular
+                de RRHH, validaciones, arquitectura, interceptores y evaluación práctica.
+              </p>
+              <p class="project-card__impact">
+                Impacto: equipo con capacidad real para desarrollar Angular moderno con mejores prácticas.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="contacto" class="content-section content-section--contact">
+        <div class="section-shell">
+          <header class="section-header">
+            <p class="section-kicker">SECCIÓN 04 // CONTACTO</p>
+            <h2 class="section-title">Si el problema es serio, hablemos con criterio técnico.</h2>
+            <p class="section-intro">
+              No vendemos paquetes genéricos. Evaluamos tu situación y te decimos con honestidad si
+              podemos ayudarte y cómo. El primer contacto es sin costo.
+            </p>
+          </header>
+
+          <div class="contact-grid">
+            <article class="contact-card">
+              <p class="contact-card__label">CONTACTO DIRECTO</p>
+              <h3>AVX Informática</h3>
+              <ul class="contact-list">
+                <li><strong>Fundador & CTO:</strong> Álvaro Vargas Quezada</li>
+                <li><strong>Email:</strong> <a href="mailto:alvaro@avx.cl">alvaro@avx.cl</a></li>
+                <li><strong>Teléfono:</strong> <a href="tel:+56956490294">+56 9 5649 0299</a></li>
+                <li><strong>Ubicación:</strong> Rengo, Región de O'Higgins, Chile</li>
+                <li><strong>Modalidad:</strong> Trabajo 100% remoto, Chile y LATAM</li>
+              </ul>
+              <div class="home__cta-group home__cta-group--contact">
+                <a href="mailto:alvaro@avx.cl" class="btn btn--primary">ESCRIBIR AHORA</a>
+                <a href="tel:+56956490294" class="btn btn--secondary">LLAMAR</a>
+              </div>
+            </article>
+
+            <article class="contact-card">
+              <p class="contact-card__label">QUÉ PODEMOS ORDENAR</p>
+              <div class="chip-list">
+                <span class="chip">Arquitectura</span>
+                <span class="chip">Integración</span>
+                <span class="chip">IA aplicada</span>
+                <span class="chip">Mobile</span>
+                <span class="chip">Cloud & DevOps</span>
+                <span class="chip">Automatización</span>
+              </div>
+              <p class="contact-card__text">
+                Si hoy tienes sistemas que no conversan, procesos manuales costosos, un backlog
+                inmanejable o una entrega crítica que no puede fallar, ese es el tipo de contexto en
+                el que AVX aporta valor.
+              </p>
+              <p class="contact-card__text">
+                También hacemos transferencia: documentación, capacitación, handover técnico y
+                continuidad operativa para que tu equipo no quede dependiente.
+              </p>
+            </article>
+          </div>
+
+          <div class="reference-grid">
+            <article class="reference-card">
+              <p class="reference-card__title">Referencia</p>
+              <h3>Luis Lobos San Martín</h3>
+              <p>Jefe de Arquitectura, CORFO</p>
+              <a href="mailto:llobos@corfo.cl">llobos@corfo.cl</a>
+              <a href="tel:+56967171620">+56 9 6717 1620</a>
+            </article>
+            <article class="reference-card">
+              <p class="reference-card__title">Referencia</p>
+              <h3>Luis Esteban Saxton</h3>
+              <p>Gerente BPO, Moveapps</p>
+              <a href="mailto:esteban@moveapps.cl">esteban@moveapps.cl</a>
+              <a href="tel:+34658282680">+34 658 28 26 80</a>
+            </article>
+            <article class="reference-card">
+              <p class="reference-card__title">Referencia</p>
+              <h3>Carlos Córdova Sandoval</h3>
+              <p>CEO, OpenGeek Service</p>
+              <a href="mailto:ccordova@opengeekservice.cl">ccordova@opengeekservice.cl</a>
+              <a href="tel:+56966683294">+56 9 6668 3294</a>
+            </article>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ESTADO 2: GAME (se activa desde JS; canvas se crea más adelante) -->
+    <section id="game-state" class="state state--game" aria-label="AVX Informática - Simulación" hidden>
+      <div class="game__root" id="game-root">
+        <div class="game__overlay" id="game-welcome" hidden>
+          <div class="game__panel" role="dialog" aria-modal="true" aria-label="Misión AVX">
+            <h2 class="game__panel-title">MISIÓN AVX</h2>
+            <div class="game__panel-body">
+              <div class="game__controls">
+                <div class="game__controls-col">
+                  <h3 class="game__controls-title">TECLADO</h3>
+                  <p class="game__controls-line">A/D → Rotar</p>
+                  <p class="game__controls-line">W → Propulsor</p>
+                  <p class="game__controls-line">ESPACIO → Disparar</p>
+                </div>
+                <div class="game__controls-col">
+                  <h3 class="game__controls-title">MOUSE</h3>
+                  <p class="game__controls-line">Cursor → Apuntar</p>
+                  <p class="game__controls-line">Clic → Disparar</p>
+                </div>
+              </div>
+              <p class="game__mission">Duración de misión: 60 segundos</p>
+              <p class="game__mission">Objetivo: Maximizar puntuación</p>
+              <p class="game__countdown">
+                Iniciando en: <span id="game-countdown">5</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ESTADO 3: FALLBACK (móvil / viewport insuficiente) -->
+    <section id="fallback-state" class="state state--fallback" aria-label="AVX Informática" hidden>
+      <div class="fallback__container">
+        <div class="fallback__logo">
+          <!-- ASSET: logo.avx.white.png — temporal; el objetivo final es SVG -->
+          <img src="assets/images/logo.avx.white.png" alt="AVX Informática" width="80" height="80" />
+        </div>
+
+        <h1 class="fallback__tagline">Construimos tu próximo<br />nivel tecnológico</h1>
+
+        <hr class="fallback__divider" />
+
+        <p class="fallback__message">
+          La experiencia completa de AVX está optimizada<br />
+          para pantallas de escritorio.
+        </p>
+        <p class="fallback__instruction">Visítanos desde tu equipo de escritorio o laptop.</p>
+
+        <hr class="fallback__divider" />
+
+        <p class="fallback__services">Software · Automatización · Arquitectura · IA</p>
+
+        <a href="mailto:alvaro@avx.cl" class="btn btn--primary fallback__cta">CONTÁCTANOS</a>
+        <p class="fallback__contact">alvaro@avx.cl</p>
+      </div>
+    </section>
+
+    <script type="module" src="js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,95 @@
+/* AVX Home — Design tokens */
+
+:root {
+  /* Fondos */
+  --color-bg-deep: #020b18;
+  --color-bg-surface: #071428;
+  --color-bg-overlay: rgba(2, 11, 24, 0.85);
+
+  /* Verde Neon AVX */
+  --color-neon-primary: #00ff88;
+  --color-neon-dim: #00cc6a;
+  --color-neon-faint: rgba(0, 255, 136, 0.15);
+  --color-neon-glow: rgba(0, 255, 136, 0.4);
+  --color-neon-panel: rgba(0, 255, 136, 0.08);
+  --color-neon-line: rgba(0, 255, 136, 0.22);
+
+  /* Texto */
+  --color-text-primary: #e8f4f0;
+  --color-text-secondary: #7b9ea8;
+  --color-text-muted: #3a5560;
+  --color-text-neon: #00ff88;
+
+  /* Planetas */
+  --color-planet-nosotros: #1a3a6b;
+  --color-planet-servicios: #2d1a4a;
+  --color-planet-portafolio: #1a4a2d;
+  --color-planet-contacto: #4a2d1a;
+  --color-planet-core: #03180f;
+
+  /* HUD */
+  --color-hud-text: #00ff88;
+  --color-hud-bg: rgba(0, 0, 0, 0.6);
+  --color-hud-border: rgba(0, 255, 136, 0.3);
+
+  /* Estados */
+  --color-danger: #ff3d3d;
+  --color-warning: #ffb800;
+  --color-inactive: #2a3a40;
+
+  /* Tipografías */
+  --font-primary: "JetBrains Mono", "Courier New", monospace;
+  --font-display: "Orbitron", "JetBrains Mono", monospace;
+
+  /* Tamaños texto */
+  --text-xs: 0.625rem;
+  --text-sm: 0.75rem;
+  --text-base: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.5rem;
+  --text-3xl: 3.5rem;
+
+  /* Pesos */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-bold: 700;
+
+  /* Tracking */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.15em;
+  --tracking-widest: 0.25em;
+
+  /* Espaciado */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* Breakpoints de juego (referencia visual; la lógica vive en JS) */
+  --game-min-width: 1024px;
+  --game-min-height: 600px;
+
+  /* Z-index layers */
+  --z-background: 0;
+  --z-particles: 1;
+  --z-planets: 2;
+  --z-home-content: 10;
+  --z-game-canvas: 20;
+  --z-hud: 21;
+  --z-overlay: 30;
+  --z-fallback: 100;
+
+  /* UI */
+  --radius-none: 0px;
+  --focus-outline: 2px solid rgba(0, 255, 136, 0.6);
+  --focus-outline-offset: 2px;
+}

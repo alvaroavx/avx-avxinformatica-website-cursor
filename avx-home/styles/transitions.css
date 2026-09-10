@@ -1,0 +1,16 @@
+/* AVX Home — State transitions */
+
+.state {
+  opacity: 1;
+  transition: opacity 220ms ease;
+}
+
+.state[hidden] {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .state {
+    transition: none;
+  }
+}
