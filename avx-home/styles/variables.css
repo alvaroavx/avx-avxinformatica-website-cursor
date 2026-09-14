@@ -20,13 +20,6 @@
   --color-text-muted: #3a5560;
   --color-text-neon: #00ff88;
 
-  /* Planetas */
-  --color-planet-nosotros: #1a3a6b;
-  --color-planet-servicios: #2d1a4a;
-  --color-planet-portafolio: #1a4a2d;
-  --color-planet-contacto: #4a2d1a;
-  --color-planet-core: #03180f;
-
   /* HUD */
   --color-hud-text: #00ff88;
   --color-hud-bg: rgba(0, 0, 0, 0.6);
@@ -73,20 +66,6 @@
   --space-12: 48px;
   --space-16: 64px;
   --space-24: 96px;
-
-  /* Breakpoints de juego (referencia visual; la lógica vive en JS) */
-  --game-min-width: 1024px;
-  --game-min-height: 600px;
-
-  /* Z-index layers */
-  --z-background: 0;
-  --z-particles: 1;
-  --z-planets: 2;
-  --z-home-content: 10;
-  --z-game-canvas: 20;
-  --z-hud: 21;
-  --z-overlay: 30;
-  --z-fallback: 100;
 
   /* UI */
   --radius-none: 0px;
