@@ -20,9 +20,9 @@ const ASTEROID_TYPES = {
 };
 const TYPE_NAMES = { scout: "EXPLORADOR", shard: "FRAGMENTO", fortress: "BLINDADO", intruder: "DRON INTRUSO" };
 const UPGRADES = [
-  { id: "twin", signal: "TWIN PULSE", copy: "Dos pulsos paralelos en cada disparo." },
-  { id: "overclock", signal: "OVERCLOCK", copy: "Reduce el intervalo de disparo un 35%." },
-  { id: "shield", signal: "REACTIVE SHIELD", copy: "Absorbe un impacto crítico." },
+  { id: "twin", signal: "PULSO DOBLE", copy: "Dos pulsos paralelos en cada disparo." },
+  { id: "overclock", signal: "SOBREMARCHA", copy: "Reduce el intervalo de disparo un 35%." },
+  { id: "shield", signal: "ESCUDO REACTIVO", copy: "Absorbe un impacto crítico." },
 ];
 function rock(x, y, typeId, speed = 32) {
   const type = ASTEROID_TYPES[typeId], radius = type.radius[0] + Math.random() * (type.radius[1] - type.radius[0]);
@@ -33,7 +33,7 @@ function rock(x, y, typeId, speed = 32) {
 export class GameController {
   constructor() {
     this.canvas = document.getElementById("game-canvas"); this.ctx = this.canvas.getContext("2d", { alpha: false });
-    const ids = ["score", "high-score", "lives", "combo", "final-score", "victory-score", "wave-message", "reinforcement-countdown", "wave-intro", "wave-title", "wave-countdown", "wave-detail", "tutorial-hint", "upgrade-options", "start-screen", "pause-screen", "settings-screen", "upgrade-screen", "game-over-screen", "victory-screen", "pause-game"];
+    const ids = ["game-hud", "score", "high-score", "lives", "combo", "wave", "mission-time", "difficulty-status", "final-score", "victory-score", "wave-message", "reinforcement-countdown", "wave-intro", "wave-title", "wave-countdown", "wave-detail", "tutorial-hint", "upgrade-options", "start-screen", "pause-screen", "settings-screen", "upgrade-screen", "game-over-screen", "victory-screen", "pause-game"];
     this.ui = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)])); this.shell = document.getElementById("game-shell");
     this.keys = new Set(); this.state = "ready"; this.highScore = Number(localStorage.getItem("avx-vector-field-high-score")) || 0; this.stars = [];
     this.theme = localStorage.getItem("avx-vector-field-theme") || "green"; this.difficulty = localStorage.getItem("avx-vector-field-difficulty") || "normal";
@@ -56,9 +56,9 @@ export class GameController {
   }
   resize() { const dpr = Math.min(devicePixelRatio || 1, 2); this.width = Math.max(320, innerWidth); this.height = Math.max(480, innerHeight); this.canvas.width = this.width * dpr; this.canvas.height = this.height * dpr; this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); this.stars = Array.from({ length: Math.ceil(this.width * this.height / 12000) }, () => ({ x: Math.random() * this.width, y: Math.random() * this.height, z: .2 + Math.random() * .8 })); }
   start() {
-    cancelAnimationFrame(this.raf); clearInterval(this.waveTimer); this.score = 0; this.wave = 0; this.rocks = []; this.bullets = []; this.enemyBullets = []; this.particles = []; this.boss = null; this.idleSeconds = 0; this.combo = 1; this.comboTime = 0; this.threatsDestroyed = 0; this.reboots = 0; this.upgrades = new Set(); this.tutorialStep = 0;
+    cancelAnimationFrame(this.raf); clearInterval(this.waveTimer); this.score = 0; this.wave = 0; this.rocks = []; this.bullets = []; this.enemyBullets = []; this.particles = []; this.boss = null; this.idleSeconds = 0; this.missionSeconds = 0; this.combo = 1; this.comboTime = 0; this.threatsDestroyed = 0; this.reboots = 0; this.upgrades = new Set(); this.tutorialStep = 0;
     this.ui["reinforcement-countdown"].textContent = ""; this.ui["tutorial-hint"].hidden = true; this.ship = { x: this.width / 2, y: this.height / 2, vx: 0, vy: 0, angle: -Math.PI / 2, lives: DIFFICULTIES[this.difficulty].lives, safe: 3, fire: 0, shield: 0 };
-    this.setScreen(null); this.ui["pause-game"].hidden = true; this.beginWave();
+    this.setScreen(null); this.setHudVisible(true); this.ui["pause-game"].hidden = true; this.beginWave();
   }
   spawnRock() {
     const difficulty = DIFFICULTIES[this.difficulty]; let typeId = difficulty.types[Math.floor(Math.random() * difficulty.types.length)]; if (typeId === "intruder" && this.wave < 2) typeId = "fortress";
@@ -79,11 +79,12 @@ export class GameController {
   }
   pause() { if (this.state === "playing") { this.state = "paused"; this.setScreen("pause-screen"); this.ui["pause-game"].hidden = true; } }
   resume() { if (this.state === "paused") { this.state = "playing"; this.setScreen(null); this.ui["pause-game"].hidden = false; this.last = performance.now(); this.raf = requestAnimationFrame((time) => this.loop(time)); } }
-  mainMenu() { cancelAnimationFrame(this.raf); clearInterval(this.waveTimer); this.keys.clear(); this.state = "ready"; this.ui["pause-game"].hidden = true; this.ui["wave-intro"].hidden = true; this.ui["tutorial-hint"].hidden = true; this.setScreen("start-screen"); this.render(); }
+  mainMenu() { cancelAnimationFrame(this.raf); clearInterval(this.waveTimer); this.keys.clear(); this.state = "ready"; this.setHudVisible(false); this.ui["pause-game"].hidden = true; this.ui["wave-intro"].hidden = true; this.ui["tutorial-hint"].hidden = true; this.setScreen("start-screen"); this.render(); }
   openSettings(origin) { this.settingsOrigin = origin; this.setScreen("settings-screen"); }
   closeSettings() { this.setScreen(this.settingsOrigin === "paused" ? "pause-screen" : "start-screen"); }
   applyTheme(theme) { if (!THEMES[theme]) return; this.theme = theme; this.colors = THEMES[theme]; this.shell.dataset.theme = theme; localStorage.setItem("avx-vector-field-theme", theme); document.querySelectorAll("[data-theme-choice]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.themeChoice === theme))); this.render(); }
   applyDifficulty(difficulty) { if (!DIFFICULTIES[difficulty]) return; this.difficulty = difficulty; localStorage.setItem("avx-vector-field-difficulty", difficulty); document.querySelectorAll("[data-difficulty-choice]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.difficultyChoice === difficulty))); }
+  setHudVisible(visible) { this.ui["game-hud"].classList.toggle("hud--visible", visible); this.ui["game-hud"].setAttribute("aria-hidden", String(!visible)); }
   setScreen(id) { ["start-screen", "pause-screen", "settings-screen", "upgrade-screen", "game-over-screen", "victory-screen"].forEach((screen) => { this.ui[screen].hidden = screen !== id; }); }
   loop(time) { if (this.state !== "playing") { this.render(); return; } const dt = Math.min((time - this.last) / 1000, .033); this.last = time; this.update(dt); this.render(); this.raf = requestAnimationFrame((next) => this.loop(next)); }
   update(dt) {
@@ -92,7 +93,7 @@ export class GameController {
     if (thrust) { s.vx += Math.cos(s.angle) * 250 * dt; s.vy += Math.sin(s.angle) * 250 * dt; this.emit(s.x - Math.cos(s.angle) * 16, s.y - Math.sin(s.angle) * 16, this.colors.thrust, 1); }
     s.vx *= .995; s.vy *= .995; s.x = wrap(s.x + s.vx * dt, this.width); s.y = wrap(s.y + s.vy * dt, this.height); s.safe = Math.max(0, s.safe - dt); s.fire -= dt; if (this.keys.has("Space")) this.fire();
     this.updateRocks(dt); this.updateBoss(dt); this.updateBullets(dt); this.updateEnemyBullets(dt); if (!s.safe && this.collidesShip()) this.hitShip();
-    this.particles = this.particles.filter((p) => { p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; return p.life > 0; }); if (this.comboTime > 0) { this.comboTime -= dt; if (this.comboTime <= 0) this.combo = 1; }
+    this.particles = this.particles.filter((p) => { p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; return p.life > 0; }); this.missionSeconds += dt; if (this.comboTime > 0) { this.comboTime -= dt; if (this.comboTime <= 0) this.combo = 1; }
     if (this.state === "playing" && !this.boss) this.updateReinforcementTimer(dt); if (this.state === "playing" && !this.boss && !this.rocks.length) { if (this.wave < 3) this.openUpgrade(); else this.beginBoss(); } this.updateHud();
   }
   fire() { const s = this.ship; if (s.fire > 0) return; (this.upgrades.has("twin") ? [-.12, .12] : [0]).forEach((offset) => { const angle = s.angle + offset; this.bullets.push({ x: s.x + Math.cos(angle) * 22, y: s.y + Math.sin(angle) * 22, vx: s.vx + Math.cos(angle) * 520, vy: s.vy + Math.sin(angle) * 520, life: .9 }); }); s.fire = this.upgrades.has("overclock") ? .117 : .18; }
@@ -106,13 +107,13 @@ export class GameController {
   hitRock(r) { const index = this.rocks.indexOf(r); if (index < 0) return; if (r.hp > 1) { r.hp -= 1; r.vx *= 1.18; r.vy *= 1.18; this.emit(r.x, r.y, "#ffcf66", 10); return; } this.idleSeconds = 0; this.ui["reinforcement-countdown"].textContent = ""; this.rocks.splice(index, 1); this.registerKill(r.score); this.emit(r.x, r.y, this.colors.line, 18); if (r.typeId === "scout" && r.radius > 40) { const fragmentType = this.difficulty === "easy" ? "scout" : "shard"; for (let i = 0; i < 2; i += 1) this.rocks.push(rock(r.x, r.y, fragmentType, Math.hypot(r.vx, r.vy) * 1.35)); } }
   registerKill(points) { this.combo = Math.min(5, this.combo + 1); this.comboTime = 4; this.score += points * this.combo; this.threatsDestroyed += 1; }
   hitShip() { const s = this.ship; this.enemyBullets = []; this.emit(s.x, s.y, "#ff5f6d", 34); if (s.shield > 0) { s.shield -= 1; s.safe = 2.5; this.flashMessage("ESCUDO REACTIVO ACTIVADO"); return; } s.lives -= 1; this.combo = 1; if (s.lives > 0) { Object.assign(s, { x: this.width / 2, y: this.height / 2, vx: 0, vy: 0, safe: 2 }); return; } if (this.difficulty !== "hard") { this.reboots += 1; s.lives = DIFFICULTIES[this.difficulty].lives; this.score = Math.floor(this.score * .75); Object.assign(s, { x: this.width / 2, y: this.height / 2, vx: 0, vy: 0, safe: 3 }); this.flashMessage("REINICIO DE EMERGENCIA // INTEGRIDAD 75%"); return; } this.gameOver(); }
-  gameOver() { this.state = "over"; this.ui["final-score"].textContent = String(this.score).padStart(6, "0"); this.ui["pause-game"].hidden = true; this.setScreen("game-over-screen"); this.saveRun("game_over"); }
-  victory() { this.state = "victory"; this.boss = null; this.ui["victory-score"].textContent = String(this.score).padStart(6, "0"); this.ui["pause-game"].hidden = true; this.setScreen("victory-screen"); this.saveRun("victory"); }
+  gameOver() { this.state = "over"; this.setHudVisible(false); this.ui["final-score"].textContent = String(this.score).padStart(6, "0"); this.ui["pause-game"].hidden = true; this.setScreen("game-over-screen"); this.saveRun("game_over"); }
+  victory() { this.state = "victory"; this.boss = null; this.setHudVisible(false); this.ui["victory-score"].textContent = String(this.score).padStart(6, "0"); this.ui["pause-game"].hidden = true; this.setScreen("victory-screen"); this.saveRun("victory"); }
   async saveRun(outcome) { try { await fetch("/api/runs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ score: this.score, difficulty: this.difficulty, outcome, threatsDestroyed: this.threatsDestroyed, reboots: this.reboots, upgrades: [...this.upgrades] }) }); } catch (_) { /* Static hosting remains playable without persistence. */ } }
   showTutorial() { if (this.difficulty !== "easy") return; const prompts = ["GIRA: ← → / A D · PROPULSA: ↑ / W", "DISPARA CON ESPACIO", "ELIMINA AMENAZAS SIN PERDER EL COMBO"], text = prompts[this.tutorialStep]; if (!text) return; this.ui["tutorial-hint"].textContent = text; this.ui["tutorial-hint"].hidden = false; window.setTimeout(() => { if (this.state === "playing") { this.ui["tutorial-hint"].hidden = true; this.tutorialStep += 1; } }, 3600); }
   flashMessage(message) { this.ui["wave-message"].textContent = message; window.setTimeout(() => { if (this.ui["wave-message"].textContent === message) this.ui["wave-message"].textContent = ""; }, 1600); }
   emit(x, y, color, amount) { for (let i = 0; i < amount; i += 1) { const angle = Math.random() * TAU, velocity = 30 + Math.random() * 180; this.particles.push({ x, y, vx: Math.cos(angle) * velocity, vy: Math.sin(angle) * velocity, color, life: .25 + Math.random() * .55 }); } }
-  updateHud() { this.highScore = Math.max(this.highScore, this.score || 0); localStorage.setItem("avx-vector-field-high-score", this.highScore); this.ui.score.textContent = String(this.score || 0).padStart(6, "0"); this.ui["high-score"].textContent = String(this.highScore).padStart(6, "0"); this.ui.lives.textContent = this.ship ? "● ".repeat(this.ship.lives).trim() || "—" : "● ● ●"; this.ui.combo.textContent = `×${this.combo || 1}`; }
+  updateHud() { this.highScore = Math.max(this.highScore, this.score || 0); localStorage.setItem("avx-vector-field-high-score", this.highScore); this.ui.score.textContent = String(this.score || 0).padStart(6, "0"); this.ui["high-score"].textContent = String(this.highScore).padStart(6, "0"); this.ui.lives.textContent = this.ship ? "● ".repeat(this.ship.lives).trim() || "—" : "● ● ●"; this.ui.combo.textContent = `×${this.combo || 1}`; this.ui.wave.textContent = this.wave >= 3 || this.boss ? "FINAL" : String(Math.max(1, this.wave || 1)).padStart(2, "0"); this.ui["difficulty-status"].textContent = ({ easy: "FÁCIL", normal: "NORMAL", hard: "DIFÍCIL" })[this.difficulty]; const seconds = Math.floor(this.missionSeconds || 0); this.ui["mission-time"].textContent = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`; }
   render() {
     const c = this.ctx; c.fillStyle = "#020711"; c.fillRect(0, 0, this.width, this.height); c.fillStyle = "#9ddcff"; this.stars.forEach((star) => { c.globalAlpha = star.z; c.fillRect(star.x, star.y, 1.2, 1.2); }); c.globalAlpha = 1; if (!this.ship) return; c.shadowColor = this.colors.glow; c.shadowBlur = 12;
     this.rocks.forEach((r) => this.renderRock(c, r)); if (this.boss) this.renderBoss(c, this.boss); c.shadowColor = this.colors.bullet; c.strokeStyle = this.colors.bullet; c.lineWidth = 1.5; this.bullets.forEach((bullet) => { c.beginPath(); c.arc(bullet.x, bullet.y, 2, 0, TAU); c.stroke(); }); c.strokeStyle = "#ffcf66"; this.enemyBullets.forEach((bullet) => { c.beginPath(); c.arc(bullet.x, bullet.y, 3, 0, TAU); c.stroke(); });
