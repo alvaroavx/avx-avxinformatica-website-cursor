@@ -1,5 +1,22 @@
 /* AVX Home — Design tokens */
 
+/* Tipografías locales: el juego no necesita Google Fonts ni conexión a internet. */
+@font-face {
+  font-family: "AVX Mono";
+  src: url("../assets/fonts/NotoSansMono-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "AVX Mono";
+  src: url("../assets/fonts/NotoSansMono-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
   /* Fondos */
   --color-bg-deep: #020b18;
@@ -31,8 +48,8 @@
   --color-inactive: #2a3a40;
 
   /* Tipografías */
-  --font-primary: "JetBrains Mono", "Courier New", monospace;
-  --font-display: "Orbitron", "JetBrains Mono", monospace;
+  --font-primary: "AVX Mono", "Courier New", monospace;
+  --font-display: "AVX Mono", "Courier New", monospace;
 
   /* Tamaños texto */
   --text-xs: 0.625rem;

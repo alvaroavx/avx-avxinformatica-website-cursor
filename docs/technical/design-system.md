@@ -1,3 +1,8 @@
+# Histórico — Sistema de diseño del sitio corporativo anterior
+
+> No es la especificación de AVX Vector Field. El juego usa fuentes locales,
+> cuatro temas y estilos definidos en `src/styles/`; ver `architecture.md`.
+
 # AVX Informática — Sistema de Diseño
 ## Documento 03: DESIGN_SYSTEM
 

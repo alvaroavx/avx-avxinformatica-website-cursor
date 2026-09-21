@@ -1,81 +1,47 @@
-# AVX Informática — Estructura de Archivos
-
-Última actualización: 2026-03-20
-
-## Árbol actual
+# Estructura de archivos
 
 ```text
 .
+├── AGENTS.md
 ├── README.md
-├── docs/
-│   ├── README.md
-│   ├── archive/
-│   ├── experience/
-│   ├── planning/
-│   ├── product/
-│   └── technical/
-└── avx-home/
-    ├── index.html
-    ├── assets/
-    │   └── images/
-    ├── js/
-    │   ├── game/
-    │   ├── home/
-    │   ├── logo/
-    │   ├── utils/
-    │   ├── main.js
-    │   └── state-manager.js
-    └── styles/
+├── server.py
+├── src/
+│   ├── index.html
+│   ├── assets/fonts/
+│   ├── js/
+│   │   ├── main.js
+│   │   ├── audio/game-audio.js
+│   │   └── game/game-controller.js
+│   └── styles/
+│       ├── variables.css
+│       ├── base.css
+│       └── game.css
+├── tests/
+│   └── game-audio.test.mjs
+└── docs/
+    ├── README.md
+    ├── audio/
+    ├── fonts/
+    ├── technical/
+    └── archive/, experience/, planning/, product/  (histórico)
 ```
 
 ## Responsabilidades
 
-### `avx-home/index.html`
+| Ruta | Responsabilidad |
+| --- | --- |
+| `src/index.html` | Canvas, HUD, pantallas, configuración y controles táctiles. |
+| `src/js/main.js` | Arranque del juego y creación del controlador. |
+| `src/js/game/game-controller.js` | Motor: estado, bucle, física, enemigos, reglas y render. |
+| `src/js/audio/game-audio.js` | Web Audio API: efectos, ambiente y cierre de nodos. |
+| `src/styles/` | Tokens, tipografía local, layout y temas. |
+| `src/assets/fonts/` | Noto Sans Mono local y licencia OFL 1.1. |
+| `tests/game-audio.test.mjs` | Pruebas de ciclo de audio y cuenta regresiva. |
+| `server.py` | HTTP local y persistencia SQLite opcional. |
 
-- Punto de entrada único.
-- Contiene los tres estados del sitio.
-- Hoy incluye secciones comerciales reales para `nosotros`, `servicios`, `portafolio` y `contacto`.
+## Límites de edición
 
-### `avx-home/js/main.js`
-
-- Bootstrap de la aplicación.
-- Orquesta estados, viewport, countdown y carga dinámica del juego.
-
-### `avx-home/js/state-manager.js`
-
-- Fuente de verdad del estado visible.
-- Alterna entre `home`, `game` y `fallback`.
-
-### `avx-home/js/home/`
-
-- `home-controller.js`: inicia y detiene el home.
-- `planets.js`: labels y setup de planetas.
-- `ui-effects.js`: canvas de partículas.
-
-### `avx-home/js/game/`
-
-- `engine.js`, `input.js`, `player.js`, `game-controller.js`: implementados parcialmente.
-- `asteroids.js`, `projectiles.js`, `collision.js`, `hud.js`, `particles.js`, `scores.js`: creados pero vacíos.
-
-### `avx-home/js/logo/`
-
-- `logo-animator.js`: sincroniza logo con estado general.
-
-### `avx-home/js/utils/`
-
-- `canvas-helpers.js`: helpers de canvas.
-- `math.js`: utilidades matemáticas.
-- `viewport.js`: reglas de viewport y watcher.
-- `dom.js`: reservado; hoy está vacío.
-
-## Assets reales actuales
-
-- `assets/images/universe.jpg`
-- `assets/images/logo.avx.white.png`
-- `assets/images/logo.avx.black.png`
-- `assets/images/favicon.png`
-
-## Notas
-
-- Todo el código del sitio vive dentro de `avx-home/`.
-- La documentación ya no se organiza por numeración secuencial sino por dominio.
+`src/` es la fuente canónica. Los archivos estáticos del sitio corporativo son
+una copia de publicación y se ubican en
+`avx-astro-avxinformatica/avxinformatica-site/public/vector-field/`; no deben
+convertirse en una segunda fuente de desarrollo.

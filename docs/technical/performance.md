@@ -1,3 +1,8 @@
+# Histórico — Estrategia de rendimiento del sitio corporativo anterior
+
+> No corresponde a AVX Vector Field. Para la implementación actual consultar
+> `architecture.md`, `testing.md` y el código canónico en `src/`.
+
 # AVX Informática — Estrategia de Rendimiento
 ## Documento 08: PERFORMANCE_SPEC
 

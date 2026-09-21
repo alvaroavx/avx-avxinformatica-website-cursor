@@ -2,7 +2,7 @@
 
 Este repositorio contiene únicamente un juego web estático. La entrada es `src/index.html`; la lógica de juego está concentrada en `src/js/game/game-controller.js`.
 
-Antes de modificarlo, inspecciona `README.md`, ejecuta `node --check src/js/main.js`, `node --check src/js/game/game-controller.js`, `python3 -m py_compile server.py` y prueba una partida con `python3 server.py`.
+Antes de modificarlo, inspecciona `README.md`, ejecuta `node --check src/js/main.js`, `node --check src/js/audio/game-audio.js`, `node --check src/js/game/game-controller.js`, `node --test tests/*.test.mjs`, `python3 -m py_compile server.py` y prueba una partida con `python3 server.py`.
 
 ## Invariantes
 

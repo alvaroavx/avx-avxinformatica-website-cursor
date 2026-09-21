@@ -6,6 +6,25 @@ La ruta canónica del juego es `src/`.
 - Inicio JavaScript: `src/js/main.js`.
 - Mecánica de la partida: `src/js/game/game-controller.js`.
 - Estilos: `src/styles/`.
+- Audio: `src/js/audio/game-audio.js`.
+- Tipografías locales: `src/assets/fonts/`.
+- Pruebas: `tests/game-audio.test.mjs`.
+
+## Fuente de verdad actual
+
+Los documentos técnicos vigentes son:
+
+- [`technical/architecture.md`](technical/architecture.md): ciclo de partida,
+  estados, Canvas 2D, audio y publicación estática.
+- [`technical/testing.md`](technical/testing.md): suite automatizada, puertas
+  locales y límites de validación.
+
+`planning/`, `product/` y `experience/` contienen propuesta corporativa y
+material anterior al juego actual. Se conservan como historial y no deben
+contradecir `src/`, el README raíz ni los documentos técnicos vigentes.
+Los archivos `technical/assets-manifest.md`, `technical/design-system.md` y
+`technical/performance.md` también pertenecen a esa propuesta anterior; no son
+especificaciones del juego actual.
 
 ## Configuración implementada
 
@@ -19,6 +38,34 @@ La ruta canónica del juego es `src/`.
 - **Cierre:** tras la tercera fase, `beginBoss()` presenta una anomalía con dos nodos y un núcleo vulnerable solo cuando ambos nodos caen. La victoria activa la pantalla narrativa final. `easy` y `normal` reinician la nave al agotar vidas con 75 % del puntaje; `hard` llama a `gameOver()`.
 
 Ambas elecciones viven exclusivamente en `localStorage` como `avx-vector-field-theme` y `avx-vector-field-difficulty`. Configuración se abre desde el menú principal o desde pausa; al abrirla durante una partida, esta sigue detenida.
+
+## Audio
+
+`GameAudio` centraliza la primera sonidificación con Web Audio API y no carga
+assets externos. Se desbloquea únicamente tras pulsar **Iniciar misión**,
+persiste volumen, música y mute bajo `avx-vector-field-audio`, y ofrece un
+control de mute durante la partida más volumen general y de música en
+Configuración. El motor responde a propulsión, disparos, daños, la cuenta
+`3…2…1` y eventos de jefe. La música combina un ambiente continuo de baja
+frecuencia con pulsos por fase; pausa, mejora, victoria, game over u ocultar
+la pestaña detienen propulsor, ambiente y loops.
+
+`node --test tests/game-audio.test.mjs` cubre el ciclo de propulsor y ambiente
+al pausar, las señales de la cuenta regresiva, el corte musical de victoria o
+derrota, y la delegación de pausa desde el controlador.
+
+La política de assets de terceros está en
+[`audio/THIRD_PARTY_AUDIO.md`](audio/THIRD_PARTY_AUDIO.md).
+
+El uso de la herramienta interna está en
+[`audio/AUDIO_LAB.md`](audio/AUDIO_LAB.md).
+
+## Tipografías locales
+
+La interfaz usa Noto Sans Mono empaquetada como TTF local con `@font-face`.
+Por tanto, no solicita Google Fonts ni otra fuente remota. Sus archivos,
+licencia y procedimiento de actualización están documentados en
+[`fonts/THIRD_PARTY_FONTS.md`](fonts/THIRD_PARTY_FONTS.md).
 
 ## Persistencia local
 

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AVX Audio Lab</title>
+    <link rel="stylesheet" href="/__dev/audio-lab/style.css" />
+  </head>
+  <body>
+    <header><strong>AVX // AUDIO LAB</strong><span id="status">Pulsa un sonido para activar audio</span><output id="active">0 voces</output></header>
+    <main>
+      <aside><input id="search" type="search" placeholder="Buscar evento" /><div id="catalog"></div></aside>
+      <section id="editor"><p>Selecciona un evento del catálogo.</p></section>
+      <section class="arena"><div class="arena-head"><strong>ÁREA DE PRUEBAS — ENTIDADES REALES</strong><button data-arena="start">INICIAR ARENA</button><button data-arena="freeze">FREEZE / RUN</button><button data-arena="ai">AI ON / OFF</button><button data-arena="clear">LIMPIAR</button></div><div class="spawns"><button data-arena="scout">EXPLORADOR</button><button data-arena="shard">FRAGMENTO</button><button data-arena="fortress">BLINDADO</button><button data-arena="intruder">DRON</button><button data-arena="boss">BOSS</button><button data-arena="shot">DISPARAR</button><button data-arena="hit">IMPACTAR NAVE</button></div><iframe id="arena" title="Área de pruebas" src="/?__dev_arena=1"></iframe></section>
+      <section class="monitor"><strong>EVENT MONITOR</strong><ol id="events"></ol><button id="export">COPIAR JSON</button><button id="import">IMPORTAR JSON</button></section>
+    </main>
+    <script type="module" src="/__dev/audio-lab/app.js"></script>
+  </body>
+</html>

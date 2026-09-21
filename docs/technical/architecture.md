@@ -1,82 +1,71 @@
-# AVX Informática — Arquitectura Técnica
+# Arquitectura técnica
 
-Última actualización: 2026-03-20
+## Alcance actual
 
-## Principio central
-
-La página debe cargar primero. El juego debe cargarse después y no puede degradar el home.
-
-## Arquitectura actual
-
-```text
-main.js
-  -> state-manager.js
-  -> utils/viewport.js
-  -> home/home-controller.js
-     -> home/planets.js
-     -> home/ui-effects.js
-  -> logo/logo-animator.js
-
-game/game-controller.js
-  -> game/engine.js
-  -> game/input.js
-  -> game/player.js
-  -> utils/canvas-helpers.js
-```
-
-## Arquitectura objetivo
+AVX Vector Field es un juego web estático de una pantalla. No usa framework ni
+motor externo: HTML, CSS, módulos ES y Canvas 2D son la plataforma de
+ejecución. `server.py` es opcional y agrega almacenamiento local SQLite; no es
+requisito para publicar o jugar la versión estática.
 
 ```text
-main.js
-  -> state-manager.js
-  -> viewport orchestration
-  -> home controller
-  -> game preloader
+src/index.html
+  -> estructura accesible: canvas, HUD, pantallas, botones y controles
+  -> src/js/main.js
+       -> GameController (src/js/game/game-controller.js)
+            -> Canvas 2D: simulación y render
+            -> GameAudio (src/js/audio/game-audio.js)
+            -> localStorage: preferencias, récord y audio
 
-game/game-controller.js
-  -> engine.js
-  -> input.js
-  -> player.js
-  -> asteroids.js
-  -> projectiles.js
-  -> collision.js
-  -> particles.js
-  -> hud.js
-  -> scores.js
+server.py (opcional)
+  -> POST /api/runs
+  -> data/vector-field.sqlite3
 ```
 
-## Observaciones del estado actual
+## Motor de partida
 
-- La importación dinámica existe, pero ocurre demasiado tarde en el flujo.
-- El contrato de eventos está solo parcialmente implementado.
-- El resize durante partida aún no sigue el comportamiento objetivo.
-- Hay módulos placeholder todavía no conectados.
+`GameController` es la fuente de verdad de la misión. Recibe entradas de
+teclado y controles táctiles, mantiene el estado, actualiza entidades y dibuja
+el canvas. Su ciclo activo es:
 
-## Eventos del sistema
+```text
+requestAnimationFrame -> loop(time) -> update(dt) -> render()
+```
 
-- `avx:statechange`
-- `avx:gamestart`
-- `avx:gamebegin`
-- `avx:gameend`
-- `avx:gameexit`
-- `avx:scoressaved`
-- `avx:viewportchange`
+`dt` se limita a 33 ms. Si el estado no es `playing`, no se actualiza física ni
+se agenda el siguiente cuadro de simulación.
 
-## Reglas de lifecycle
+`update(dt)` resuelve movimiento de nave, asteroides, dron, jefe, proyectiles,
+partículas, colisiones, puntaje, combo, refuerzos, transiciones y HUD.
+`render()` dibuja el campo y las entidades para el tema actualmente elegido.
 
-### Home
+## Estados
 
-- El canvas del home corre solo en estado `home`.
-- Debe pausarse inmediatamente al entrar a `game`.
+| Estado | Comportamiento |
+| --- | --- |
+| `ready` | Menú principal; HUD y audio de partida ocultos. |
+| `intermission` | Nave centrada y protegida; cuenta `3…2…1`. |
+| `playing` | Simulación, controles, HUD y audio activos. |
+| `paused` | Simulación y audio continuo detenidos. |
+| `upgrade` | Partida detenida hasta elegir una mejora. |
+| `victory` / `over` | Partida terminada con pantalla narrativa o game over. |
 
-### Game
+La pestaña oculta invoca pausa. Entrar en pausa, mejora, intermisión, jefe,
+menú, victoria o derrota detiene explícitamente el propulsor para evitar nodos
+de audio residuales.
 
-- Se crea canvas al entrar.
-- Se destruye canvas al salir.
-- Debe pausar si la pestaña queda oculta.
-- Debe pausar si el viewport deja de cumplir mínimos.
+## Audio local
 
-### Fallback
+`GameAudio` usa Web Audio API tras una interacción explícita con **Iniciar
+misión**. Sintetiza efectos, propulsor, señales de cuenta regresiva, ambiente
+espacial continuo y pulsos por fase o jefe. No descarga audio, no usa servicios
+remotos y persiste volumen, música y mute en `localStorage`.
 
-- No debe correr animaciones costosas.
-- Debe ser estático y liviano.
+Al pausar, mejorar, ganar o perder, se cierran propulsor, ambiente y secuencia
+musical. Las señales finales se ejecutan sin reactivar el fondo continuo.
+
+## Publicación estática
+
+`src/` es canónico. Para publicar en el sitio corporativo se copia a
+`avx-astro-avxinformatica/avxinformatica-site/public/vector-field/`; la salida
+generada de Astro queda en `dist/vector-field/`. El juego continúa operativo
+sin `/api/runs`; simplemente no registra resultados SQLite.

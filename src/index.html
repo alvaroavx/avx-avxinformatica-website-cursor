@@ -6,9 +6,6 @@
     <meta name="theme-color" content="#020711" />
     <meta name="description" content="AVX Vector Field: arcade espacial inspirado en Asteroids." />
     <title>AVX Vector Field</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@600;700;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles/variables.css" />
     <link rel="stylesheet" href="styles/base.css" />
     <link rel="stylesheet" href="styles/game.css" />
@@ -72,6 +69,11 @@
           <button class="theme-option" data-difficulty-choice="normal" type="button" aria-pressed="true"><span class="difficulty-mark">II</span><span>NORMAL <small>asteroides ×2 · 3 vidas</small></span></button>
           <button class="theme-option" data-difficulty-choice="hard" type="button" aria-pressed="false"><span class="difficulty-mark">III</span><span>DIFÍCIL <small>asteroides ×3–×5 · 2 vidas</small></span></button>
         </fieldset>
+        <fieldset class="theme-picker audio-settings">
+          <legend>AUDIO</legend>
+          <label>VOLUMEN GENERAL <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="0.7" /></label>
+          <label>MÚSICA <input id="music-volume" type="range" min="0" max="1" step="0.05" value="0.32" /></label>
+        </fieldset>
         <div class="menu-actions"><button id="close-settings" class="button button--primary" type="button"><span class="button__signal">‹</span>VOLVER</button></div>
       </section>
 
@@ -106,6 +108,7 @@
       </section>
 
       <button id="pause-game" class="pause" type="button" aria-label="Pausar partida" hidden>Ⅱ</button>
+      <button id="audio-toggle" class="audio-toggle" type="button" aria-label="Silenciar sonido" aria-pressed="false" hidden>🔊</button>
       <div class="touch-controls" aria-label="Controles táctiles">
         <button data-control="left" type="button" aria-label="Girar a la izquierda">↶</button>
         <button data-control="thrust" type="button" aria-label="Propulsar">▲</button>

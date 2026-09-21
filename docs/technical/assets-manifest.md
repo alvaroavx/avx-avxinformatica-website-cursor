@@ -1,3 +1,9 @@
+# Histórico — Manifiesto de assets del sitio corporativo anterior
+
+> No describe AVX Vector Field. Para sus fuentes y audio actuales consultar
+> `../fonts/THIRD_PARTY_FONTS.md`, `../audio/THIRD_PARTY_AUDIO.md` y
+> `architecture.md`.
+
 # AVX Informática — Manifiesto de Assets
 ## Documento 07: ASSETS_MANIFEST
 
