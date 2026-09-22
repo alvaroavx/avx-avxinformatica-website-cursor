@@ -31,13 +31,13 @@ especificaciones del juego actual.
 `GameController` define y persiste la personalización local del jugador:
 
 - **Tema:** `green` (predeterminado, Verde AVX), `cyan` (Celeste), `pink` (Rosado) y `yellow` (Amarillo). El cambio actualiza Canvas y toda la interfaz de mando: HUD, paneles, botones, controles y foco.
-- **Dificultad:** `easy` define la velocidad base con 4 vidas; `normal` usa ×2 de esa velocidad con 3 vidas; `hard` usa ×3, ×4 o ×5 elegidos aleatoriamente por asteroide, 2 vidas y más rocas. Se aplica cuando empieza una misión nueva.
+- **Dificultad de misión:** `easy` define la velocidad base con 4 vidas; `normal` usa ×2 de esa velocidad con 3 vidas; `hard` usa ×3, ×4 o ×5 elegidos aleatoriamente por asteroide, 2 vidas y más rocas. Se escoge desde el menú inicial mediante las opciones numeradas Fácil, Normal o Difícil y al elegirla comienza la partida; no forma parte de Configuración.
 - **Refuerzos por inactividad:** si el jugador no destruye un asteroide, aparecen más rocas tras 20 s en `easy`, 14 s en `normal` o 9 s en `hard`. `reinforcement-countdown` se muestra durante los cinco segundos finales; `hitRock()` reinicia ese temporizador.
-- **Actos y familias:** hay tres fases. `beginWave()` devuelve la nave al centro, la protege y muestra 3–2–1. `easy` usa `scout` y un tutorial contextual; `normal` añade `shard` (pequeño, rápido, trazo discontinuo); `hard` añade `fortress` (carcasa/anillo ámbar y dos impactos) e `intruder` (dron que persigue y dispara). Un `scout` grande se fragmenta al ser destruido.
-- **Elecciones y puntaje:** tras las fases uno y dos, `openUpgrade()` presenta `twin`, `overclock` o `shield`, activos durante la misión. `registerKill()` conserva un combo de hasta ×5 durante cuatro segundos.
-- **Cierre:** tras la tercera fase, `beginBoss()` presenta una anomalía con dos nodos y un núcleo vulnerable solo cuando ambos nodos caen. La victoria activa la pantalla narrativa final. `easy` y `normal` reinician la nave al agotar vidas con 75 % del puntaje; `hard` llama a `gameOver()`.
+- **Actos y familias:** hay tres fases. `beginWave()` devuelve la nave al centro, la protege y muestra 3–2–1. Todas las dificultades pueden desplegar `scout`, `shard`, `fortress` e `intruder`; el dron cambia su conducta por nivel, sus disparos en Difícil viven el doble de tiempo y `fortress` recibe 2, 3 o 5 impactos en Fácil, Normal o Difícil. `updateEnemyBullets()` anula todo proyectil enemigo al tocar un borde, mientras los pulsos del jugador conservan el salto espacial. Un `scout` grande se fragmenta una sola vez: sus hijos son terminales.
+- **Elecciones y puntaje:** tras las fases uno y dos, `openUpgrade()` presenta dos mejoras de una baraja aleatoria sin repetición entre `twin`, `overclock`, `shield` y `long-shot`; se puede elegir una por etapa. `registerKill()` conserva un combo de hasta ×5 durante cuatro segundos.
+- **Cierre:** tras la tercera fase, `beginBoss()` presenta una anomalía con dos nodos y un núcleo vulnerable solo cuando ambos nodos caen. En Normal, `updateFinalBossAttack()` ejecuta una única carga audiovisual de 1,35 s y descarga radial. En Difícil, alterna esa carga y una descarga cada cinco segundos mientras el núcleo siga vivo; sus proyectiles también tienen mayor alcance temporal y las ráfagas dirigidas tienen 3, 4 o 5 pulsos. La victoria activa la pantalla narrativa final. `easy` y `normal` reinician la nave al agotar vidas con 75 % del puntaje; `hard` llama a `gameOver()`.
 
-Ambas elecciones viven exclusivamente en `localStorage` como `avx-vector-field-theme` y `avx-vector-field-difficulty`. Configuración se abre desde el menú principal o desde pausa; al abrirla durante una partida, esta sigue detenida.
+Ambas preferencias viven exclusivamente en `localStorage` como `avx-vector-field-theme` y `avx-vector-field-difficulty`. Configuración se abre desde el menú principal o desde pausa y solo ofrece tema y audio; al abrirla durante una partida, esta sigue detenida.
 
 ## Audio
 
@@ -48,7 +48,8 @@ control de mute durante la partida más volumen general y de música en
 Configuración. El motor responde a propulsión, disparos, daños, la cuenta
 `3…2…1` y eventos de jefe. La música combina un ambiente continuo de baja
 frecuencia con pulsos por fase; pausa, mejora, victoria, game over u ocultar
-la pestaña detienen propulsor, ambiente y loops.
+la pestaña detienen propulsor, ambiente y loops. Al entrar en `gameOver()`,
+`playerDeath()` sintetiza un arpegio descendente breve.
 
 `node --test tests/game-audio.test.mjs` cubre el ciclo de propulsor y ambiente
 al pausar, las señales de la cuenta regresiva, el corte musical de victoria o

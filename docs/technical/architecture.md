@@ -38,6 +38,18 @@ se agenda el siguiente cuadro de simulación.
 partículas, colisiones, puntaje, combo, refuerzos, transiciones y HUD.
 `render()` dibuja el campo y las entidades para el tema actualmente elegido.
 
+Los pulsos del jugador usan salto espacial en `updateBullets()`. En cambio,
+`updateEnemyBullets()` nunca envuelve coordenadas: elimina cualquier proyectil
+enemigo que llegue a uno de los cuatro bordes del campo. Los disparos del dron
+en Difícil duran 5,2 s, el doble de los 2,6 s de Fácil y Normal.
+
+En Normal, al caer ambos nodos del jefe, este entra una sola vez en `charging`
+durante 1,35 s: vibra y emite una señal ascendente antes de liberar una
+descarga radial. En Difícil, luego permanece 3,65 s en `cooldown` y vuelve a
+cargarla si el núcleo sigue vivo. Sus proyectiles dirigidos y radiales viven
+4,6 s, frente a 3 s para el disparo dirigido de los demás niveles; cada ráfaga
+dirigida difícil contiene aleatoriamente 3, 4 o 5 pulsos.
+
 ## Estados
 
 | Estado | Comportamiento |

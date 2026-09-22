@@ -2,10 +2,10 @@ const STORAGE_KEY = "avx-vector-field-audio";
 const LAB_STORAGE_KEY = "avx-vector-field-audio-lab";
 
 export const AUDIO_CATALOG = [
-  ["player.shot", "PLAYER", "Disparo", "playerShot"], ["player.hit", "PLAYER", "Impacto", "playerHit"], ["player.engine", "PLAYER", "Propulsor", "setThrust"],
+  ["player.shot", "PLAYER", "Disparo", "playerShot"], ["player.hit", "PLAYER", "Impacto", "playerHit"], ["player.death", "PLAYER", "Arpegio de pérdida", "playerDeath"], ["player.engine", "PLAYER", "Propulsor", "setThrust"],
   ["asteroid.hit", "ASTEROIDES", "Impacto", "asteroidHit"], ["asteroid.explode.small", "ASTEROIDES", "Explosión pequeña", "asteroidHit"], ["asteroid.explode.large", "ASTEROIDES", "Explosión grande", "asteroidHit"],
   ["drone.spawn", "DRONES", "Aparición", "droneSpawn"], ["drone.shot", "DRONES", "Disparo", "droneShot"],
-  ["boss.arrival", "BOSS", "Llegada", "bossArrival"], ["boss.attack", "BOSS", "Ataque", "bossAttack"], ["boss.hit", "BOSS", "Impacto", "bossHit"],
+  ["boss.arrival", "BOSS", "Llegada", "bossArrival"], ["boss.countdown", "BOSS", "Alarma de emergencia", "bossCountdownAlarm"], ["boss.charge", "BOSS", "Carga de descarga", "bossCharge"], ["boss.attack", "BOSS", "Ataque", "bossAttack"], ["boss.hit", "BOSS", "Impacto", "bossHit"],
   ["game.start", "JUEGO", "Inicio", "startSignal"], ["game.wave.start", "JUEGO", "Oleada", "waveSignal"], ["game.countdown", "JUEGO", "Cuenta regresiva", "countdownTick"], ["game.victory", "JUEGO", "Victoria", "victory"], ["game.over", "JUEGO", "Derrota", "gameOver"],
   ["ui.confirm", "INTERFAZ", "Confirmación", "uiConfirm"],
 ].map(([id, group, label, method]) => ({ id, group, label, method }));
@@ -30,7 +30,7 @@ const VICTORY_SPARKLES = [[420, 1174.66], [530, 1760], [640, 1479.98], [750, 176
 
 export class GameAudio {
   constructor() {
-    this.settings = { muted: false, volume: .7, music: .32, ...this.readSettings() };
+    const storedSettings = this.readSettings(); this.settings = { muted: false, volume: .7, music: .7, ...storedSettings }; if (storedSettings.music === .32) this.settings.music = .7;
     this.context = null; this.master = null; this.music = null; this.sfx = null; this.engine = null; this.ambience = null; this.musicTimer = null; this.victoryTimers = []; this.musicStep = 0; this.musicState = "idle"; this.bossPhase = 0; this.lab = this.readLab(); this.mix = { ...MIX_DEFAULTS, ...(this.lab.__mix || {}) }; this.listeners = new Set(); this.activeSounds = 0;
   }
 
@@ -59,7 +59,7 @@ export class GameAudio {
   eventMix(eventId, group) { const catalogGroup = eventId ? AUDIO_CATALOG.find((event) => event.id === eventId)?.group : null; const key = group || ({ PLAYER: "player", ASTEROIDES: "asteroids", DRONES: "drones", BOSS: "boss", INTERFAZ: "ui" }[catalogGroup] || "sfx"); return this.mix[key] ?? 1; }
   setMuted(muted) { this.settings.muted = muted; if (muted) { this.stopEngine(); this.stopAmbience(); } else if (!["idle", "paused", "victory", "gameover"].includes(this.musicState)) this.startAmbience(); this.persist(); this.applyGains(); }
   setVolume(volume) { this.settings.volume = Number(volume); this.persist(); this.applyGains(); }
-  setMusicVolume(volume) { this.settings.music = Number(volume); this.persist(); this.applyGains(); }
+  setMusicVolume(volume) { this.settings.music = Math.max(0, Math.min(.7, Number(volume))); this.persist(); this.applyGains(); }
   tone(frequency, duration, { type = "square", volume = .16, slide = 0, bus = this.sfx, eventId, group } = {}) {
     if (!this.context || this.settings.muted) return;
     const preset = eventId ? this.preset(eventId) : DEFAULT_PRESET, random = preset.variation ? (Math.random() * 2 - 1) * preset.variation : 0, rate = Math.max(.5, Math.min(2, preset.rate || 1)), detune = preset.detune + random;
@@ -78,13 +78,16 @@ export class GameAudio {
   playerShot() { this.tone(580 + Math.random() * 55, .075, { volume: .12, slide: 260, eventId: "player.shot" }); }
   asteroidHit(large = false) { this.tone(large ? 110 : 180, large ? .2 : .12, { type: "triangle", volume: large ? .2 : .12, slide: -45, eventId: large ? "asteroid.explode.large" : "asteroid.hit" }); this.noise(large ? .12 : .06, large ? .1 : .05); }
   playerHit() { this.tone(130, .32, { type: "sawtooth", volume: .25, slide: -90, eventId: "player.hit" }); this.noise(.18, .16); }
+  playerDeath() { [659.25, 523.25, 392, 261.63].forEach((frequency, index) => window.setTimeout(() => this.tone(frequency, .18, { type: "sawtooth", volume: .1, slide: -35, eventId: index === 0 ? "player.death" : undefined, group: "player" }), index * 135)); }
   droneSpawn() { this.tone(260, .18, { type: "sawtooth", volume: .11, slide: 150, eventId: "drone.spawn" }); }
   droneShot() { this.tone(210, .11, { type: "square", volume: .1, slide: -70, eventId: "drone.shot" }); }
   bossArrival() { this.duck(); this.tone(62, .55, { type: "sawtooth", volume: .3, slide: -25, eventId: "boss.arrival" }); this.noise(.24, .16); }
+  bossCharge() { [145, 190, 265].forEach((frequency, index) => window.setTimeout(() => this.tone(frequency, .22, { type: "sawtooth", volume: .14 + index * .025, slide: 95, eventId: index === 0 ? "boss.charge" : undefined, group: "boss" }), index * 150)); }
   bossAttack() { this.tone(95, .22, { type: "sawtooth", volume: .18, slide: 110, eventId: "boss.attack" }); }
   bossHit() { this.tone(155, .16, { type: "triangle", volume: .16, slide: -45, eventId: "boss.hit" }); }
   startSignal() { this.tone(380, .12, { volume: .13, slide: 200, eventId: "game.start" }); }
   countdownTick(value) { const frequency = ({ 3: 270, 2: 360, 1: 520 })[value] || 270; this.tone(frequency, .12, { type: "triangle", volume: value === 1 ? .17 : .12, slide: value === 1 ? 120 : 45, eventId: "game.countdown" }); if (value === 1) this.noise(.045, .035); }
+  bossCountdownAlarm(value = 3) { const lower = ({ 3: 430, 2: 470, 1: 520 })[value] || 430; this.tone(lower, .2, { type: "sawtooth", volume: .15, slide: 125, eventId: "boss.countdown", group: "boss" }); window.setTimeout(() => this.tone(lower + 185, .16, { type: "square", volume: .085, slide: -80, group: "boss" }), 125); if (value === 1) this.noise(.055, .045); }
   waveSignal() { this.tone(330, .1, { volume: .1, slide: 110, eventId: "game.wave.start" }); }
   uiConfirm() { this.tone(520, .06, { type: "square", volume: .08, slide: 80, eventId: "ui.confirm" }); }
   scheduleVictory(callback, delay) { this.victoryTimers.push(window.setTimeout(callback, delay)); }

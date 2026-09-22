@@ -56,6 +56,33 @@ test("la cuenta regresiva genera tres señales ascendentes", async () => {
   assert.deepEqual(audio.context.oscillators.slice(-3).map((oscillator) => oscillator.frequency.values[0]), [270, 360, 520]);
 });
 
+test("la cuenta del jefe usa una alarma distinta a la señal de oleada", async () => {
+  const audio = new GameAudio();
+  await audio.unlock();
+  audio.bossCountdownAlarm(3);
+
+  assert.deepEqual(audio.context.oscillators.slice(-2).map((oscillator) => oscillator.frequency.values[0]), [430, 615]);
+  assert.ok(AUDIO_CATALOG.some((event) => event.id === "boss.countdown"));
+});
+
+test("la carga de descarga del jefe tiene una señal ascendente propia", async () => {
+  const audio = new GameAudio();
+  await audio.unlock();
+  audio.bossCharge();
+
+  assert.deepEqual(audio.context.oscillators.slice(-3).map((oscillator) => oscillator.frequency.values[0]), [145, 190, 265]);
+  assert.ok(AUDIO_CATALOG.some((event) => event.id === "boss.charge"));
+});
+
+test("perder la partida reproduce un arpegio descendente propio", async () => {
+  const audio = new GameAudio();
+  await audio.unlock();
+  audio.playerDeath();
+
+  assert.deepEqual(audio.context.oscillators.slice(-4).map((oscillator) => oscillator.frequency.values[0]), [659.25, 523.25, 392, 261.63]);
+  assert.ok(AUDIO_CATALOG.some((event) => event.id === "player.death"));
+});
+
 test("victoria y game over detienen la capa musical continua", async () => {
   const audio = new GameAudio();
   await audio.unlock();
@@ -140,6 +167,14 @@ test("el mezclador del laboratorio persiste y aplica refuerzo musical", async ()
   const restored = new GameAudio();
   assert.equal(restored.mix.music, 1.6);
   assert.equal(restored.mix.boss, 1.4);
+});
+
+test("el control principal limita la música de fondo a 70 por ciento", () => {
+  const audio = new GameAudio();
+  audio.setMusicVolume(1);
+  assert.equal(audio.settings.music, .7);
+  audio.setMusicVolume(-1);
+  assert.equal(audio.settings.music, 0);
 });
 
 test("cada oleada emite los tonos 3, 2 y 1", () => {

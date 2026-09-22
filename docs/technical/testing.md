@@ -14,8 +14,12 @@ derrota; la delegación de pausa desde `GameController`; y la emisión completa
 de la cuenta de oleada.
 
 `tests/game-rules.test.mjs` cubre las reglas de refuerzos por dificultad, la
-visibilidad del contador final, el aislamiento de la arena de desarrollo, la
-creación y limpieza de entidades reales de laboratorio, y freeze/IA.
+visibilidad del contador final, la fragmentación terminal de exploradores, el
+elenco completo por nivel, la vida de blindados, los patrones de dron y la
+señal de carga, descarga final repetida y alcance de los proyectiles del jefe
+en Difícil, además
+del aislamiento de la arena de desarrollo, la creación y limpieza de entidades
+reales de laboratorio, y freeze/IA.
 
 No reproduce audio real: valida creación, estado y cierre de nodos. La escucha
 manual sigue siendo necesaria para evaluar volumen y mezcla en un navegador.

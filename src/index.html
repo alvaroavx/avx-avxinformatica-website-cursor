@@ -30,9 +30,13 @@
       <section id="start-screen" class="screen" aria-labelledby="game-title">
         <p class="screen__eyebrow">SECTOR 07 // DEFENSA VECTORIAL</p>
         <h1 id="game-title">AVX<br /><span>VECTOR FIELD</span></h1>
-        <p class="screen__lede">Pilota, rompe el campo de rocas y sobrevive a cada oleada.</p>
-        <div class="menu-actions">
-          <button id="start-game" class="button button--primary" type="button"><span class="button__signal">01</span>INICIAR MISIÓN</button>
+        <p class="screen__lede">ELIGE LA DIFICULTAD DE LA MISIÓN</p>
+        <div class="menu-actions mission-picker" aria-label="Selecciona la dificultad de la misión">
+          <button class="button button--quiet mission-option" data-start-difficulty="easy" type="button" aria-pressed="false"><span class="button__signal">01</span><span class="mission-option__copy"><strong>SOY UN NOVATO</strong><small>FÁCIL</small></span><span class="mission-option__balance" aria-hidden="true"></span></button>
+          <button class="button button--quiet mission-option" data-start-difficulty="normal" type="button" aria-pressed="false"><span class="button__signal">02</span><span class="mission-option__copy"><strong>YA SÉ LO QUE HAGO</strong><small>NORMAL</small></span><span class="mission-option__balance" aria-hidden="true"></span></button>
+          <button class="button button--quiet mission-option" data-start-difficulty="hard" type="button" aria-pressed="false"><span class="button__signal">03</span><span class="mission-option__copy"><strong>DAME UN DESAFÍO</strong><small>DIFÍCIL</small></span><span class="mission-option__balance" aria-hidden="true"></span></button>
+        </div>
+        <div class="menu-actions menu-actions--settings">
           <button id="open-settings-from-menu" class="button button--quiet" type="button"><span class="button__signal">◇</span>CONFIGURACIÓN</button>
         </div>
         <div class="screen__controls" aria-label="Controles">
@@ -63,16 +67,10 @@
           <button class="theme-option" data-theme-choice="pink" type="button" aria-pressed="false"><span class="theme-swatch theme-swatch--pink"></span>ROSADO</button>
           <button class="theme-option" data-theme-choice="yellow" type="button" aria-pressed="false"><span class="theme-swatch theme-swatch--yellow"></span>AMARILLO</button>
         </fieldset>
-        <fieldset class="theme-picker">
-          <legend>DIFICULTAD</legend>
-          <button class="theme-option" data-difficulty-choice="easy" type="button" aria-pressed="false"><span class="difficulty-mark">I</span><span>FÁCIL <small>menos rocas · 4 vidas</small></span></button>
-          <button class="theme-option" data-difficulty-choice="normal" type="button" aria-pressed="true"><span class="difficulty-mark">II</span><span>NORMAL <small>asteroides ×2 · 3 vidas</small></span></button>
-          <button class="theme-option" data-difficulty-choice="hard" type="button" aria-pressed="false"><span class="difficulty-mark">III</span><span>DIFÍCIL <small>asteroides ×3–×5 · 2 vidas</small></span></button>
-        </fieldset>
         <fieldset class="theme-picker audio-settings">
           <legend>AUDIO</legend>
           <label>VOLUMEN GENERAL <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="0.7" /></label>
-          <label>MÚSICA <input id="music-volume" type="range" min="0" max="1" step="0.05" value="0.32" /></label>
+          <label>MÚSICA <input id="music-volume" type="range" min="0" max="0.7" step="0.05" value="0.7" /></label>
         </fieldset>
         <div class="menu-actions"><button id="close-settings" class="button button--primary" type="button"><span class="button__signal">‹</span>VOLVER</button></div>
       </section>
@@ -86,9 +84,7 @@
       <aside id="tutorial-hint" class="tutorial-hint" hidden aria-live="polite"></aside>
 
       <section id="upgrade-screen" class="screen" hidden aria-live="assertive" aria-labelledby="upgrade-title">
-        <p class="screen__eyebrow">NÚCLEO // CALIBRACIÓN</p>
         <h2 id="upgrade-title">ELIGE UNA MEJORA</h2>
-        <p class="screen__lede">La elección queda activa durante esta misión.</p>
         <div id="upgrade-options" class="upgrade-options"></div>
       </section>
 
@@ -99,12 +95,14 @@
         <div class="menu-actions"><button id="restart-game" class="button button--primary" type="button">NUEVA MISIÓN</button><button id="main-menu-from-game-over" class="button button--quiet" type="button">MENÚ PRINCIPAL</button></div>
       </section>
 
-      <section id="victory-screen" class="screen" hidden aria-live="assertive">
-        <p class="screen__eyebrow">SEÑAL ESTABILIZADA</p>
-        <h2>SYSTEM RESTORED</h2>
-        <p class="screen__lede">SIMULATION COMPLETE // AVX ONLINE</p>
-        <p class="screen__lede">Puntaje final: <output id="victory-score">000000</output></p>
-        <div class="menu-actions"><button id="restart-victory" class="button button--primary" type="button">NUEVA MISIÓN</button><button id="main-menu-from-victory" class="button button--quiet" type="button">MENÚ PRINCIPAL</button></div>
+      <section id="victory-screen" class="screen victory-screen" hidden aria-live="assertive">
+        <div class="victory-crawl">
+          <p class="screen__eyebrow">TRANSMISIÓN DE VICTORIA</p>
+          <h2>FELICITACIONES</h2>
+          <p class="screen__lede victory__status">EL SISTEMA HA SIDO PROTEGIDO</p>
+          <p class="screen__lede">PUNTAJE FINAL: <output id="victory-score">000000</output></p>
+          <div class="menu-actions"><button id="restart-victory" class="button button--primary" type="button">NUEVA MISIÓN</button><button id="main-menu-from-victory" class="button button--quiet" type="button">MENÚ PRINCIPAL</button></div>
+        </div>
       </section>
 
       <button id="pause-game" class="pause" type="button" aria-label="Pausar partida" hidden>Ⅱ</button>

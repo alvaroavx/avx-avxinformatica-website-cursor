@@ -18,6 +18,10 @@ aparecer comienza con bajo y motivo; tras el aviso inicial añade arpegio y
 kick; y al bajar el núcleo de 30 % incorpora snare, hi-hat y acelera a 142 BPM.
 No reutiliza melodías ni grabaciones de obras existentes.
 
+Su cuenta regresiva usa una alarma de emergencia original sintetizada: dos
+timbres alternados y ascendentes por cada paso `3…2…1`, separados de la señal
+regular de oleada. No incorpora ni imita grabaciones de alarmas reales.
+
 Al destruir el núcleo, la música deja un vacío breve tras la explosión y da
 paso a una fanfarria original de victoria en **Re mayor**, de cerca de siete
 segundos. Su melodía asciende con Re–Fa♯–La–Re, bajo, acordes y destellos
