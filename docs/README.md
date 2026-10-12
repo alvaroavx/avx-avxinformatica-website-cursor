@@ -18,6 +18,8 @@ Los documentos técnicos vigentes son:
   estados, Canvas 2D, audio y publicación estática.
 - [`technical/testing.md`](technical/testing.md): suite automatizada, puertas
   locales y límites de validación.
+- [`planning/decisions.md`](planning/decisions.md): decisiones vigentes que
+  afectan la experiencia o arquitectura del juego.
 
 `planning/`, `product/` y `experience/` contienen propuesta corporativa y
 material anterior al juego actual. Se conservan como historial y no deben
@@ -31,6 +33,7 @@ especificaciones del juego actual.
 `GameController` define y persiste la personalización local del jugador:
 
 - **Tema:** `green` (predeterminado, Verde AVX), `cyan` (Celeste), `pink` (Rosado) y `yellow` (Amarillo). El cambio actualiza Canvas y toda la interfaz de mando: HUD, paneles, botones, controles y foco.
+- **Modo táctil:** conserva el campo lógico de escritorio de 1600×900 y centra una cámara de cabina sobre la nave. Un mando izquierdo combina giro y propulsión, el gatillo derecho mantiene el disparo y hasta cinco marcadores de borde orientan hacia amenazas fuera de cámara. Vertical recorta más el campo; horizontal amplía la visión sin modificar las reglas.
 - **Dificultad de misión:** `easy` define la velocidad base con 4 vidas; `normal` usa ×2 de esa velocidad con 3 vidas; `hard` usa ×3, ×4 o ×5 elegidos aleatoriamente por asteroide, 2 vidas y más rocas. Se escoge desde el menú inicial mediante las opciones numeradas Fácil, Normal o Difícil y al elegirla comienza la partida; no forma parte de Configuración.
 - **Refuerzos por inactividad:** si el jugador no destruye un asteroide, aparecen más rocas tras 20 s en `easy`, 14 s en `normal` o 9 s en `hard`. `reinforcement-countdown` se muestra durante los cinco segundos finales; `hitRock()` reinicia ese temporizador.
 - **Actos y familias:** hay tres fases. `beginWave()` devuelve la nave al centro, la protege y muestra 3–2–1. Todas las dificultades pueden desplegar `scout`, `shard`, `fortress` e `intruder`; el dron cambia su conducta por nivel, sus disparos en Difícil viven el doble de tiempo y `fortress` recibe 2, 3 o 5 impactos en Fácil, Normal o Difícil. `updateEnemyBullets()` anula todo proyectil enemigo al tocar un borde, mientras los pulsos del jugador conservan el salto espacial. Un `scout` grande se fragmenta una sola vez: sus hijos son terminales.
@@ -72,4 +75,9 @@ licencia y procedimiento de actualización están documentados en
 
 `server.py` sirve `src/` y expone `POST /api/runs`. Con `sqlite3` de la biblioteca estándar crea localmente `data/vector-field.sqlite3` y guarda solo el resultado de victoria o game over: fecha, puntaje, dificultad, resultado, amenazas destruidas, reintentos y mejoras. El navegador sigue funcionando si se sirve de forma estática, pero entonces el endpoint no existe y no se persiste el resultado. La base se excluye de Git.
 
-Los documentos dentro de `archive/`, `planning/`, `experience/`, `product/` y `technical/` describen la antigua propuesta de sitio corporativo y se conservan solo como registro histórico. No deben utilizarse para desarrollar el juego actual ni como referencia de estructura: algunas rutas antiguas aún mencionan `avx-home/`, pero el directorio fue renombrado definitivamente a `src/`.
+Los documentos dentro de `archive/`, `experience/` y `product/`, junto con
+`planning/` salvo `planning/decisions.md`, describen la antigua propuesta de
+sitio corporativo y se conservan solo como registro histórico. No deben
+utilizarse para desarrollar el juego actual ni como referencia de estructura:
+algunas rutas antiguas aún mencionan `avx-home/`, pero el directorio fue
+renombrado definitivamente a `src/`.

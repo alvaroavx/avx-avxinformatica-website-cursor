@@ -38,6 +38,25 @@ se agenda el siguiente cuadro de simulación.
 partículas, colisiones, puntaje, combo, refuerzos, transiciones y HUD.
 `render()` dibuja el campo y las entidades para el tema actualmente elegido.
 
+## Cámara y controles táctiles
+
+En escritorio, las dimensiones lógicas del mundo coinciden con el canvas. En
+un dispositivo con puntero grueso, el motor conserva un mundo lógico de
+**1600×900** y un viewport independiente: la cámara se centra en la nave y el
+canvas proyecta entidades mediante coordenadas con envoltura espacial. Así la
+nave queda al centro de la cabina sin cambiar la física ni miniaturizar el
+campo.
+
+`touchKeys` es una fuente de entrada separada de `keys`, que conserva teclado.
+El mando izquierdo traduce el desplazamiento del dedo a giro y propulsión; el
+gatillo derecho mantiene el disparo. Al pausar, salir al menú o esconder el
+HUD se liberan esas entradas para impedir propulsión o disparo retenido.
+
+Durante una partida táctil, `renderThreatIndicators()` dibuja hasta cinco
+marcadores de borde para las amenazas más próximas que están fuera de cámara.
+No modifica colisiones ni IA: es orientación visual. El HUD y los controles
+son HTML/CSS encima del canvas; el mundo sigue renderizándose en Canvas 2D.
+
 Los pulsos del jugador usan salto espacial en `updateBullets()`. En cambio,
 `updateEnemyBullets()` nunca envuelve coordenadas: elimina cualquier proyectil
 enemigo que llegue a uno de los cuatro bordes del campo. Los disparos del dron

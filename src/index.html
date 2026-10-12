@@ -12,7 +12,7 @@
   </head>
   <body>
     <main id="game-shell" class="game" data-theme="green" aria-labelledby="game-title">
-      <canvas id="game-canvas" class="game__canvas" aria-label="Campo de juego. Usa las flechas o WASD para pilotear y espacio para disparar."></canvas>
+      <canvas id="game-canvas" class="game__canvas" aria-label="Campo de juego. En teclado usa flechas o WASD y espacio. En táctil, usa el mando izquierdo para volar y el gatillo derecho para disparar."></canvas>
 
       <header id="game-hud" class="hud" aria-label="Estado de partida" aria-hidden="true">
         <div class="hud__brand"><span>AVX</span> VECTOR FIELD</div>
@@ -107,11 +107,16 @@
 
       <button id="pause-game" class="pause" type="button" aria-label="Pausar partida" hidden>Ⅱ</button>
       <button id="audio-toggle" class="audio-toggle" type="button" aria-label="Silenciar sonido" aria-pressed="false" hidden>🔊</button>
-      <div class="touch-controls" aria-label="Controles táctiles">
-        <button data-control="left" type="button" aria-label="Girar a la izquierda">↶</button>
-        <button data-control="thrust" type="button" aria-label="Propulsar">▲</button>
-        <button data-control="right" type="button" aria-label="Girar a la derecha">↷</button>
-        <button data-control="fire" type="button" aria-label="Disparar">✦</button>
+      <div id="touch-controls" class="touch-controls" aria-label="Controles táctiles de cabina" hidden>
+        <div class="flight-stick" id="touch-flight-stick" role="group" aria-label="Mando de vuelo: arrastra hacia arriba para propulsar y hacia los lados para girar">
+          <span class="flight-stick__label" aria-hidden="true">VUELO</span>
+          <span class="flight-stick__axis flight-stick__axis--horizontal" aria-hidden="true"></span>
+          <span class="flight-stick__axis flight-stick__axis--vertical" aria-hidden="true"></span>
+          <span class="flight-stick__thumb" id="touch-flight-thumb" aria-hidden="true"></span>
+        </div>
+        <button id="touch-fire" class="touch-fire" type="button" aria-label="Mantener para disparar">
+          <span aria-hidden="true">✦</span><small>DISPARAR</small>
+        </button>
       </div>
       <p class="game__hint" id="wave-message" aria-live="polite"></p>
       <p class="reinforcement-countdown" id="reinforcement-countdown" aria-live="polite"></p>

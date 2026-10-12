@@ -21,6 +21,11 @@ en Difícil, además
 del aislamiento de la arena de desarrollo, la creación y limpieza de entidades
 reales de laboratorio, y freeze/IA.
 
+También cubre el contrato de cámara táctil: un campo lógico de escritorio se
+proyecta alrededor de la nave, incluso al cruzar un borde, por lo que la nave
+permanece centrada y los objetivos reaparecen por el lado correcto del
+viewport.
+
 No reproduce audio real: valida creación, estado y cierre de nodos. La escucha
 manual sigue siendo necesaria para evaluar volumen y mezcla en un navegador.
 
@@ -40,5 +45,6 @@ Astro, ejecutar `npm run build` allí y comparar las copias con `cmp`.
 ## Límites
 
 La suite no reemplaza una partida manual, pruebas de accesibilidad del canvas,
-ni validación táctil. En una publicación estática tampoco verifica SQLite,
+ni validación táctil en teléfono real y sus dos orientaciones. En una
+publicación estática tampoco verifica SQLite,
 porque `POST /api/runs` no existe por diseño.

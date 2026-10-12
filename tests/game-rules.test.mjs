@@ -152,6 +152,24 @@ test("los proyectiles enemigos se anulan al tocar un borde y los de la nave atra
   assert.equal(game.bullets[0].x, 1);
 });
 
+test("la cámara táctil mantiene la nave centrada y proyecta el borde envuelto más cercano", () => {
+  const game = controller();
+  game.isTouchViewport = true;
+  game.width = 1600;
+  game.height = 900;
+  game.viewWidth = 390;
+  game.viewHeight = 844;
+  game.ship = { x: 1540, y: 450 };
+
+  const camera = game.getCamera();
+  const ship = game.toScreen(game.ship.x, game.ship.y, camera);
+  const wrappedTarget = game.toScreen(40, 450, camera);
+
+  assert.deepEqual(ship, { x: 195, y: 422 });
+  assert.ok(wrappedTarget.x > ship.x, "el objetivo tras el borde derecho aparece a la derecha");
+  assert.ok(camera.scale > .9, "en vertical el campo no se miniaturiza");
+});
+
 test("el dron fácil alterna una aproximación segura con una retirada lejana", () => {
   const originalRandom = Math.random;
   try {

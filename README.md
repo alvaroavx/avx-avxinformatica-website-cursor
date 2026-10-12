@@ -20,7 +20,7 @@ Abre `http://127.0.0.1:8080/`.
 - Flecha arriba o `W`: propulsión.
 - `Espacio`: disparar.
 - `Escape` o el botón circular: pausar y continuar.
-- En pantallas táctiles, utiliza los cuatro controles inferiores.
+- En pantallas táctiles, arrastra el mando de vuelo inferior izquierdo: hacia arriba propulsa y hacia los lados gira. Mantén el gatillo inferior derecho para disparar.
 
 ## Menú y configuración
 
@@ -64,7 +64,12 @@ El récord y las preferencias se guardan en `localStorage`. Al jugar a través d
 
 `GameController` es el motor de la partida. Recibe controles, mantiene el
 estado de la misión, actualiza física y colisiones, resuelve oleadas y renderiza
-el Canvas 2D en el ciclo `requestAnimationFrame → update(dt) → render()`.
+el Canvas 2D en el ciclo `requestAnimationFrame → update(dt) → render()`. En
+escritorio el mundo coincide con el viewport. En pantallas táctiles conserva un
+campo lógico de 1600×900 y la cámara sigue la nave: el teléfono muestra un
+recorte del mismo campo en vez de miniaturizarlo. Los indicadores de borde
+apuntan hacia amenazas que quedaron fuera de cuadro; vertical ofrece un
+encuadre cerrado y horizontal abre la visión de cabina.
 `GameAudio` queda separado para que el estado de juego ordene sonidos, pero no
 contenga implementación de Web Audio API.
 
