@@ -48,9 +48,19 @@ nave queda al centro de la cabina sin cambiar la física ni miniaturizar el
 campo.
 
 `touchKeys` es una fuente de entrada separada de `keys`, que conserva teclado.
-El mando izquierdo traduce el desplazamiento del dedo a giro y propulsión; el
-gatillo derecho mantiene el disparo. Al pausar, salir al menú o esconder el
-HUD se liberan esas entradas para impedir propulsión o disparo retenido.
+El mando izquierdo establece `touchHeading`: un rumbo absoluto que
+`updateShipHeading()` alcanza sin sobrepasarlo y conserva al soltar el dedo.
+Los botones derechos mantienen por separado propulsión (`ArrowUp`) y disparo
+(`Space`). Al pausar, salir al menú o esconder el HUD se liberan las acciones
+y el rumbo para impedir propulsión o disparo retenido en una pantalla ajena a
+la partida.
+
+En la cabina táctil, el HUD se divide en dos grupos superiores no continuos:
+telemetría de dificultad, tiempo y oleada a la izquierda; música y pausa a la
+derecha. `updateHud()` replica puntaje y vidas en `touch-score` y
+`touch-lives`, centrados entre el mando de rumbo y las acciones inferiores.
+Récord y combo siguen siendo reglas internas, pero no se renderizan durante la
+partida.
 
 Durante una partida táctil, `renderThreatIndicators()` dibuja hasta cinco
 marcadores de borde para las amenazas más próximas que están fuera de cámara.

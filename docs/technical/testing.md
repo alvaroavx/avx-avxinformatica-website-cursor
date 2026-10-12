@@ -26,6 +26,10 @@ proyecta alrededor de la nave, incluso al cruzar un borde, por lo que la nave
 permanece centrada y los objetivos reaparecen por el lado correcto del
 viewport.
 
+La misma suite verifica el control táctil de rumbo: un objetivo angular se
+alcanza sin sobrepasarlo y, una vez alineada, la nave deja de rotar. La
+propulsión y el disparo se mantienen como entradas separadas en la interfaz.
+
 No reproduce audio real: valida creación, estado y cierre de nodos. La escucha
 manual sigue siendo necesaria para evaluar volumen y mezcla en un navegador.
 

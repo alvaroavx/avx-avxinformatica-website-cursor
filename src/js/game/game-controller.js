@@ -2,6 +2,7 @@ import { GameAudio } from "../audio/game-audio.js";
 
 const TAU = Math.PI * 2;
 const wrap = (n, limit) => ((n % limit) + limit) % limit;
+const angleDelta = (target, current) => wrap(target - current + Math.PI, TAU) - Math.PI;
 const wrappedDelta = (value, origin, limit) => wrap(value - origin + limit / 2, limit) - limit / 2;
 const distanceSq = (a, b) => (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
 const MOBILE_WORLD = { width: 1600, height: 900 };
@@ -38,7 +39,7 @@ function rock(x, y, typeId, speed = 32, canSplit = true, hitPoints = null) {
 export class GameController {
   constructor() {
     this.canvas = document.getElementById("game-canvas"); this.ctx = this.canvas.getContext("2d", { alpha: false });
-    const ids = ["game-hud", "score", "high-score", "lives", "combo", "wave", "mission-time", "difficulty-status", "final-score", "victory-score", "wave-message", "reinforcement-countdown", "wave-intro", "wave-title", "wave-countdown", "wave-detail", "tutorial-hint", "upgrade-options", "start-screen", "pause-screen", "settings-screen", "upgrade-screen", "game-over-screen", "victory-screen", "pause-game", "audio-toggle", "audio-volume", "music-volume", "touch-controls", "touch-flight-stick", "touch-flight-thumb", "touch-fire"];
+    const ids = ["game-hud", "score", "lives", "touch-score", "touch-lives", "wave", "mission-time", "difficulty-status", "final-score", "victory-score", "wave-message", "reinforcement-countdown", "wave-intro", "wave-title", "wave-countdown", "wave-detail", "tutorial-hint", "upgrade-options", "start-screen", "pause-screen", "settings-screen", "upgrade-screen", "game-over-screen", "victory-screen", "pause-game", "audio-toggle", "audio-volume", "music-volume", "touch-controls", "touch-flight-stick", "touch-flight-thumb", "touch-boost", "touch-fire"];
     this.ui = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)])); this.shell = document.getElementById("game-shell");
     this.keys = new Set(); this.touchKeys = new Set(); this.state = "ready"; this.highScore = Number(localStorage.getItem("avx-vector-field-high-score")) || 0; this.stars = []; this.audio = new GameAudio(); this.labMode = false; this.labFreeze = false; this.labAi = true;
     this.theme = localStorage.getItem("avx-vector-field-theme") || "green"; this.difficulty = localStorage.getItem("avx-vector-field-difficulty") || "normal";
@@ -63,20 +64,24 @@ export class GameController {
     this.bindTouchControls();
   }
   bindTouchControls() {
-    const stick = this.ui["touch-flight-stick"], fire = this.ui["touch-fire"];
-    const releaseFlight = (event) => { if (this.touchPointer !== undefined && (!event || event.pointerId === this.touchPointer)) { this.touchPointer = undefined; this.touchKeys.delete("ArrowLeft"); this.touchKeys.delete("ArrowRight"); this.touchKeys.delete("ArrowUp"); stick.classList.remove("flight-stick--active"); this.ui["touch-flight-thumb"].style.transform = "translate(0, 0)"; } };
+    const stick = this.ui["touch-flight-stick"];
+    const releaseFlight = (event) => { if (this.touchPointer !== undefined && (!event || event.pointerId === this.touchPointer)) { this.touchPointer = undefined; stick.classList.remove("flight-stick--active"); this.ui["touch-flight-thumb"].style.transform = "translate(0, 0)"; } };
     stick.addEventListener("pointerdown", (event) => { event.preventDefault(); this.touchPointer = event.pointerId; stick.setPointerCapture?.(event.pointerId); stick.classList.add("flight-stick--active"); this.updateFlightStick(event); });
     stick.addEventListener("pointermove", (event) => { if (event.pointerId === this.touchPointer) { event.preventDefault(); this.updateFlightStick(event); } });
     ["pointerup", "pointercancel", "lostpointercapture"].forEach((name) => stick.addEventListener(name, releaseFlight));
-    const releaseFire = (event) => { event.preventDefault(); this.touchKeys.delete("Space"); fire.classList.remove("touch-fire--active"); };
-    fire.addEventListener("pointerdown", (event) => { event.preventDefault(); fire.setPointerCapture?.(event.pointerId); this.touchKeys.add("Space"); fire.classList.add("touch-fire--active"); });
-    ["pointerup", "pointercancel", "lostpointercapture"].forEach((name) => fire.addEventListener(name, releaseFire));
+    this.bindTouchHold("touch-boost", "ArrowUp"); this.bindTouchHold("touch-fire", "Space");
+  }
+  bindTouchHold(id, key) {
+    const button = this.ui[id], activeClass = `${id}--active`;
+    const release = (event) => { event.preventDefault(); this.touchKeys.delete(key); button.classList.remove(activeClass); };
+    button.addEventListener("pointerdown", (event) => { event.preventDefault(); button.setPointerCapture?.(event.pointerId); this.touchKeys.add(key); button.classList.add(activeClass); });
+    ["pointerup", "pointercancel", "lostpointercapture"].forEach((name) => button.addEventListener(name, release));
   }
   updateFlightStick(event) {
     const rect = this.ui["touch-flight-stick"].getBoundingClientRect(), radius = rect.width / 2, x = Math.max(-1, Math.min(1, (event.clientX - rect.left - radius) / radius)), y = Math.max(-1, Math.min(1, (event.clientY - rect.top - radius) / radius));
     const magnitude = Math.min(1, Math.hypot(x, y)), limitedX = x * (magnitude > 1 ? 1 / magnitude : 1), limitedY = y * (magnitude > 1 ? 1 / magnitude : 1);
     this.ui["touch-flight-thumb"].style.transform = `translate(${limitedX * 29}px, ${limitedY * 29}px)`;
-    [["ArrowLeft", limitedX < -.2], ["ArrowRight", limitedX > .2], ["ArrowUp", limitedY < -.18]].forEach(([key, active]) => { if (active) this.touchKeys.add(key); else this.touchKeys.delete(key); });
+    if (magnitude > .18) this.touchHeading = Math.atan2(limitedY, limitedX);
   }
   resize() {
     const dpr = Math.min(devicePixelRatio || 1, 2), coarse = window.matchMedia?.("(pointer: coarse)")?.matches || navigator.maxTouchPoints > 0;
@@ -116,20 +121,28 @@ export class GameController {
   closeSettings() { this.setScreen(this.settingsOrigin === "paused" ? "pause-screen" : "start-screen"); }
   applyTheme(theme) { if (!THEMES[theme]) return; this.theme = theme; this.colors = THEMES[theme]; this.shell.dataset.theme = theme; localStorage.setItem("avx-vector-field-theme", theme); document.querySelectorAll("[data-theme-choice]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.themeChoice === theme))); this.render(); }
   applyDifficulty(difficulty) { if (!DIFFICULTIES[difficulty]) return; this.difficulty = difficulty; localStorage.setItem("avx-vector-field-difficulty", difficulty); document.querySelectorAll("[data-start-difficulty]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.startDifficulty === difficulty))); }
-  clearTouchControls() { this.touchKeys?.clear(); if (!this.ui?.["touch-flight-stick"]) return; this.ui["touch-flight-stick"].classList.remove("flight-stick--active"); this.ui["touch-flight-thumb"].style.transform = "translate(0, 0)"; this.ui["touch-fire"].classList.remove("touch-fire--active"); }
+  clearTouchControls() { this.touchKeys?.clear(); this.touchHeading = undefined; if (!this.ui?.["touch-flight-stick"]) return; this.ui["touch-flight-stick"].classList.remove("flight-stick--active"); this.ui["touch-flight-thumb"].style.transform = "translate(0, 0)"; this.ui["touch-boost"].classList.remove("touch-boost--active"); this.ui["touch-fire"].classList.remove("touch-fire--active"); }
   setHudVisible(visible) { this.ui["game-hud"].classList.toggle("hud--visible", visible); this.ui["game-hud"].setAttribute("aria-hidden", String(!visible)); this.ui["audio-toggle"].hidden = !visible; this.ui["touch-controls"].hidden = !visible || !this.isTouchViewport; if (!visible) this.clearTouchControls(); }
   updateAudioControls() { const { muted, volume, music } = this.audio.settings; this.ui["audio-toggle"].textContent = muted ? "🔇" : "🔊"; this.ui["audio-toggle"].setAttribute("aria-label", muted ? "Activar sonido" : "Silenciar sonido"); this.ui["audio-toggle"].setAttribute("aria-pressed", String(muted)); this.ui["audio-volume"].value = String(volume); this.ui["music-volume"].value = String(music); }
   setScreen(id) { ["start-screen", "pause-screen", "settings-screen", "upgrade-screen", "game-over-screen", "victory-screen"].forEach((screen) => { this.ui[screen].hidden = screen !== id; }); }
   loop(time) { if (this.state !== "playing") { this.render(); return; } const dt = Math.min((time - this.last) / 1000, .033); this.last = time; this.update(dt); this.render(); this.raf = requestAnimationFrame((next) => this.loop(next)); }
   update(dt) {
     if (this.labMode && this.labFreeze) { this.updateHud(); return; }
-    const s = this.ship, left = this.keys.has("ArrowLeft") || this.keys.has("KeyA") || this.touchKeys.has("ArrowLeft"), right = this.keys.has("ArrowRight") || this.keys.has("KeyD") || this.touchKeys.has("ArrowRight"), thrust = this.keys.has("ArrowUp") || this.keys.has("KeyW") || this.touchKeys.has("ArrowUp");
-    s.angle += (Number(right) - Number(left)) * 4.4 * dt;
+    const s = this.ship, left = this.keys.has("ArrowLeft") || this.keys.has("KeyA"), right = this.keys.has("ArrowRight") || this.keys.has("KeyD"), thrust = this.keys.has("ArrowUp") || this.keys.has("KeyW") || this.touchKeys.has("ArrowUp");
+    this.updateShipHeading(s, dt, left, right);
     if (thrust) { s.vx += Math.cos(s.angle) * 250 * dt; s.vy += Math.sin(s.angle) * 250 * dt; this.emit(s.x - Math.cos(s.angle) * 16, s.y - Math.sin(s.angle) * 16, this.colors.thrust, 1); } this.audio.setThrust(thrust);
     s.vx *= .995; s.vy *= .995; s.x = wrap(s.x + s.vx * dt, this.width); s.y = wrap(s.y + s.vy * dt, this.height); s.safe = Math.max(0, s.safe - dt); s.fire -= dt; if (this.keys.has("Space") || this.touchKeys.has("Space")) this.fire();
     this.updateRocks(dt); this.updateBoss(dt); this.updateBullets(dt); this.updateEnemyBullets(dt); if (!s.safe && this.collidesShip()) this.hitShip();
     this.particles = this.particles.filter((p) => { p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; return p.life > 0; }); this.missionSeconds += dt; if (this.comboTime > 0) { this.comboTime -= dt; if (this.comboTime <= 0) this.combo = 1; }
     if (!this.labMode && this.state === "playing" && !this.boss) this.updateReinforcementTimer(dt); if (!this.labMode && this.state === "playing" && !this.boss && !this.rocks.length) { if (this.wave < 3) this.openUpgrade(); else this.beginBoss(); } this.updateHud();
+  }
+  updateShipHeading(ship, dt, left, right) {
+    if (Number.isFinite(this.touchHeading)) {
+      const delta = angleDelta(this.touchHeading, ship.angle), turn = Math.min(Math.abs(delta), 6 * dt);
+      ship.angle += Math.sign(delta) * turn;
+      return;
+    }
+    ship.angle += (Number(right) - Number(left)) * 4.4 * dt;
   }
   fire() { const s = this.ship; if (s.fire > 0) return; const range = this.upgrades.has("long-shot") ? 1.8 : .9; (this.upgrades.has("twin") ? [-.12, .12] : [0]).forEach((offset) => { const angle = s.angle + offset; this.bullets.push({ x: s.x + Math.cos(angle) * 22, y: s.y + Math.sin(angle) * 22, vx: s.vx + Math.cos(angle) * 520, vy: s.vy + Math.sin(angle) * 520, life: range }); }); this.audio.playerShot(); s.fire = this.upgrades.has("overclock") ? .117 : .18; }
   fireDrone(r, angle, cooldown) { this.enemyBullets.push({ x: r.x, y: r.y, vx: Math.cos(angle) * 180, vy: Math.sin(angle) * 180, life: this.difficulty === "hard" ? 5.2 : 2.6 }); this.audio.droneShot(); r.shot = cooldown; }
@@ -187,7 +200,7 @@ export class GameController {
   showTutorial() { if (this.difficulty !== "easy") return; const prompts = this.isTouchViewport ? ["MANIOBRA: ARRASTRA EL MANDO IZQUIERDO", "MANTÉN DISPARAR PARA EMITIR PULSOS", "SIGUE LOS MARCADORES DEL BORDE Y CONSERVA EL COMBO"] : ["GIRA: ← → / A D · PROPULSA: ↑ / W", "DISPARA CON ESPACIO", "ELIMINA AMENAZAS SIN PERDER EL COMBO"], text = prompts[this.tutorialStep]; if (!text) return; this.ui["tutorial-hint"].textContent = text; this.ui["tutorial-hint"].hidden = false; window.setTimeout(() => { if (this.state === "playing") { this.ui["tutorial-hint"].hidden = true; this.tutorialStep += 1; } }, 3600); }
   flashMessage(message) { this.ui["wave-message"].textContent = message; window.setTimeout(() => { if (this.ui["wave-message"].textContent === message) this.ui["wave-message"].textContent = ""; }, 1600); }
   emit(x, y, color, amount) { for (let i = 0; i < amount; i += 1) { const angle = Math.random() * TAU, velocity = 30 + Math.random() * 180; this.particles.push({ x, y, vx: Math.cos(angle) * velocity, vy: Math.sin(angle) * velocity, color, life: .25 + Math.random() * .55 }); } }
-  updateHud() { this.highScore = Math.max(this.highScore, this.score || 0); localStorage.setItem("avx-vector-field-high-score", this.highScore); this.ui.score.textContent = String(this.score || 0).padStart(6, "0"); this.ui["high-score"].textContent = String(this.highScore).padStart(6, "0"); this.ui.lives.textContent = this.ship ? "● ".repeat(this.ship.lives).trim() || "—" : "● ● ●"; this.ui.combo.textContent = `×${this.combo || 1}`; this.ui.wave.textContent = this.wave >= 3 || this.boss ? "FINAL" : String(Math.max(1, this.wave || 1)).padStart(2, "0"); this.ui["difficulty-status"].textContent = ({ easy: "FÁCIL", normal: "NORMAL", hard: "DIFÍCIL" })[this.difficulty]; const seconds = Math.floor(this.missionSeconds || 0); this.ui["mission-time"].textContent = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`; }
+  updateHud() { this.highScore = Math.max(this.highScore, this.score || 0); localStorage.setItem("avx-vector-field-high-score", this.highScore); const score = String(this.score || 0).padStart(6, "0"), lives = this.ship ? "● ".repeat(this.ship.lives).trim() || "—" : "● ● ●"; this.ui.score.textContent = score; this.ui["touch-score"].textContent = score; this.ui.lives.textContent = lives; this.ui["touch-lives"].textContent = lives; this.ui.wave.textContent = this.wave >= 3 || this.boss ? "FINAL" : String(Math.max(1, this.wave || 1)).padStart(2, "0"); this.ui["difficulty-status"].textContent = ({ easy: "FÁCIL", normal: "NORMAL", hard: "DIFÍCIL" })[this.difficulty]; const seconds = Math.floor(this.missionSeconds || 0); this.ui["mission-time"].textContent = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`; }
   getCamera() {
     const followsShip = this.isTouchViewport && this.ship;
     return { x: followsShip ? this.ship.x : this.width / 2, y: followsShip ? this.ship.y : this.height / 2, scale: followsShip ? Math.max(this.viewWidth / this.width, this.viewHeight / this.height) : 1 };

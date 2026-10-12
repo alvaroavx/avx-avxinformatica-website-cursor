@@ -12,7 +12,7 @@
   </head>
   <body>
     <main id="game-shell" class="game" data-theme="green" aria-labelledby="game-title">
-      <canvas id="game-canvas" class="game__canvas" aria-label="Campo de juego. En teclado usa flechas o WASD y espacio. En táctil, usa el mando izquierdo para volar y el gatillo derecho para disparar."></canvas>
+      <canvas id="game-canvas" class="game__canvas" aria-label="Campo de juego. En teclado usa flechas o WASD y espacio. En táctil, usa el mando izquierdo para orientar y los botones derechos para propulsar y disparar."></canvas>
 
       <header id="game-hud" class="hud" aria-label="Estado de partida" aria-hidden="true">
         <div class="hud__brand"><span>AVX</span> VECTOR FIELD</div>
@@ -20,10 +20,12 @@
           <div class="hud__metric"><span class="hud__label">DIFICULTAD</span><output id="difficulty-status">NORMAL</output></div>
           <div class="hud__metric"><span class="hud__label">TIEMPO</span><output id="mission-time">00:00</output></div>
           <div class="hud__metric"><span class="hud__label">OLEADA</span><output id="wave">01</output></div>
-          <div class="hud__metric"><span class="hud__label">PUNTAJE</span><output id="score">000000</output></div>
-          <div class="hud__metric"><span class="hud__label">RÉCORD</span><output id="high-score">000000</output></div>
-          <div class="hud__metric"><span class="hud__label">VIDAS</span><output id="lives">● ● ●</output></div>
-          <div class="hud__metric"><span class="hud__label">COMBO</span><output id="combo">×1</output></div>
+          <div class="hud__metric hud__metric--combat"><span class="hud__label">PUNTAJE</span><output id="score">000000</output></div>
+          <div class="hud__metric hud__metric--combat"><span class="hud__label">VIDAS</span><output id="lives">● ● ●</output></div>
+        </div>
+        <div class="hud__actions" aria-label="Acciones de partida">
+          <button id="audio-toggle" class="audio-toggle" type="button" aria-label="Silenciar sonido" aria-pressed="false" hidden>🔊</button>
+          <button id="pause-game" class="pause" type="button" aria-label="Pausar partida" hidden>Ⅱ</button>
         </div>
       </header>
 
@@ -105,18 +107,21 @@
         </div>
       </section>
 
-      <button id="pause-game" class="pause" type="button" aria-label="Pausar partida" hidden>Ⅱ</button>
-      <button id="audio-toggle" class="audio-toggle" type="button" aria-label="Silenciar sonido" aria-pressed="false" hidden>🔊</button>
       <div id="touch-controls" class="touch-controls" aria-label="Controles táctiles de cabina" hidden>
-        <div class="flight-stick" id="touch-flight-stick" role="group" aria-label="Mando de vuelo: arrastra hacia arriba para propulsar y hacia los lados para girar">
-          <span class="flight-stick__label" aria-hidden="true">VUELO</span>
+        <div class="flight-stick" id="touch-flight-stick" role="group" aria-label="Mando de rumbo: arrastra para orientar la punta de la nave">
+          <span class="flight-stick__label" aria-hidden="true">RUMBO</span>
           <span class="flight-stick__axis flight-stick__axis--horizontal" aria-hidden="true"></span>
           <span class="flight-stick__axis flight-stick__axis--vertical" aria-hidden="true"></span>
           <span class="flight-stick__thumb" id="touch-flight-thumb" aria-hidden="true"></span>
         </div>
-        <button id="touch-fire" class="touch-fire" type="button" aria-label="Mantener para disparar">
-          <span aria-hidden="true">✦</span><small>DISPARAR</small>
-        </button>
+        <div class="touch-status" aria-label="Puntaje y vidas">
+          <div class="touch-status__metric"><span>PUNTAJE</span><output id="touch-score">000000</output></div>
+          <div class="touch-status__metric"><span>VIDAS</span><output id="touch-lives">● ● ●</output></div>
+        </div>
+        <div class="touch-actions" aria-label="Acciones de nave">
+          <button id="touch-boost" class="touch-action touch-boost" type="button" aria-label="Mantener para propulsar"><span aria-hidden="true">▲</span><small>PROPULSAR</small></button>
+          <button id="touch-fire" class="touch-action touch-fire" type="button" aria-label="Mantener para disparar"><span aria-hidden="true">✦</span><small>DISPARAR</small></button>
+        </div>
       </div>
       <p class="game__hint" id="wave-message" aria-live="polite"></p>
       <p class="reinforcement-countdown" id="reinforcement-countdown" aria-live="polite"></p>

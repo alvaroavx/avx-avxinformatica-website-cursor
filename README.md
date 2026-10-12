@@ -20,7 +20,7 @@ Abre `http://127.0.0.1:8080/`.
 - Flecha arriba o `W`: propulsión.
 - `Espacio`: disparar.
 - `Escape` o el botón circular: pausar y continuar.
-- En pantallas táctiles, arrastra el mando de vuelo inferior izquierdo: hacia arriba propulsa y hacia los lados gira. Mantén el gatillo inferior derecho para disparar.
+- En pantallas táctiles, arrastra el mando de rumbo inferior izquierdo para orientar la punta de la nave. Mantén **Propulsar** o **Disparar**, en los botones derechos independientes, para acelerar o atacar. Puntaje y vidas permanecen centrados entre los controles; arriba quedan dificultad, tiempo, oleada, música y pausa.
 
 ## Menú y configuración
 

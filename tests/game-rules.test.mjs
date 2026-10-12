@@ -170,6 +170,46 @@ test("la cámara táctil mantiene la nave centrada y proyecta el borde envuelto 
   assert.ok(camera.scale > .9, "en vertical el campo no se miniaturiza");
 });
 
+test("el mando táctil alcanza el rumbo solicitado y deja de rotar", () => {
+  const game = controller();
+  const ship = { angle: -Math.PI / 2 };
+  game.touchHeading = Math.PI / 4;
+
+  for (let frame = 0; frame < 30; frame += 1) game.updateShipHeading(ship, .1, false, false);
+
+  assert.ok(Math.abs(ship.angle - Math.PI / 4) < 1e-9);
+  const reachedAngle = ship.angle;
+  game.updateShipHeading(ship, 1, false, false);
+  assert.equal(ship.angle, reachedAngle);
+});
+
+test("el HUD táctil replica puntaje y vidas entre los controles", () => {
+  const originalStorage = globalThis.localStorage;
+  try {
+    globalThis.localStorage = { setItem() {} };
+    const game = controller();
+    game.highScore = 0;
+    game.score = 1234;
+    game.combo = 4;
+    game.wave = 2;
+    game.difficulty = "normal";
+    game.missionSeconds = 65;
+    game.ship = { lives: 3 };
+    game.ui = { score: {}, "touch-score": {}, lives: {}, "touch-lives": {}, wave: {}, "difficulty-status": {}, "mission-time": {} };
+
+    game.updateHud();
+
+    assert.equal(game.ui.score.textContent, "001234");
+    assert.equal(game.ui["touch-score"].textContent, "001234");
+    assert.equal(game.ui.lives.textContent, "● ● ●");
+    assert.equal(game.ui["touch-lives"].textContent, "● ● ●");
+    assert.equal(game.ui["difficulty-status"].textContent, "NORMAL");
+    assert.equal(game.ui["mission-time"].textContent, "01:05");
+  } finally {
+    if (originalStorage === undefined) delete globalThis.localStorage; else globalThis.localStorage = originalStorage;
+  }
+});
+
 test("el dron fácil alterna una aproximación segura con una retirada lejana", () => {
   const originalRandom = Math.random;
   try {
